@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T18:40:00.000Z",
+  "lastUpdated": "2026-02-09T23:40:00.000Z",
   "searchCriteria": {
     "zips": ["29710", "29745", "29720", "29730"],
     "priceMin": 300000,
@@ -10,5 +10,81 @@
     "sqftMin": 1800,
     "sqftMax": 2200
   },
-  "listings": []
+  "listings": [
+    {
+      "id": "29710-001",
+      "address": "2180 Lawrence Rd",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$395,000",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2136,
+      "status": "Contingent",
+      "url": "https://www.realtor.com/realestateandhomes-detail/2180-Lawrence-Rd_Clover_SC_29710_M62392-49331",
+      "isNew": true,
+      "notes": "2 baths (need 2.5), but close match on sqft"
+    },
+    {
+      "id": "29710-002",
+      "address": "137 Cedar Grove Rd",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$305,000",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 1750,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/137-Cedar-Grove-Rd_Clover_SC_29710_M59219-21454",
+      "isNew": true,
+      "notes": "Price reduced $10k. 2 baths, sqft slightly under."
+    },
+    {
+      "id": "29710-003",
+      "address": "1889 Berrywood Ln",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$329,900",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 1891,
+      "status": "Contingent",
+      "url": "https://www.realtor.com/realestateandhomes-detail/1889-Berrywood-Ln_Clover_SC_29710_M62383-56721",
+      "isNew": true,
+      "notes": "New listing. 2 baths, sqft in range."
+    },
+    {
+      "id": "29710-004",
+      "address": "303 Kings Mountain St",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$325,000",
+      "beds": 4,
+      "baths": 3,
+      "sqft": 2785,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/303-Kings-Mountain-St_Clover_SC_29710_M58580-80552",
+      "isNew": true,
+      "notes": "4bed/3bath perfect! But sqft over limit (2785 vs 2200 max). Price reduced $14k."
+    },
+    {
+      "id": "29710-005",
+      "address": "2187 Smith Road (Sandalwood)",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "From $360,000",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 1657,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/Sandalwood_Build-a-custom-home-on-your-land-or-ours_2187-Smith-Road_Clover_SC_29710_P417000995201",
+      "isNew": true,
+      "notes": "New construction. 2 baths, sqft under. Build on your land or theirs."
+    }
+  ]
 }
