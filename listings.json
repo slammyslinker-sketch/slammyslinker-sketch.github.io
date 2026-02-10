@@ -1,16 +1,31 @@
 {
-  "lastUpdated": "2026-02-09T23:52:00.000Z",
+  "lastUpdated": "2026-02-09T23:58:00.000Z",
   "searchCriteria": {
     "zips": ["29710", "29745", "29720", "29730"],
     "priceMin": 300000,
     "priceMax": 400000,
     "bedsMin": 3,
     "bedsMax": 4,
-    "bathsMin": 2.5,
+    "bathsMin": 2,
     "sqftMin": 1800,
     "sqftMax": 2200
   },
   "listings": [
+    {
+      "id": "29730-001",
+      "address": "711 Forest Rd",
+      "city": "Rock Hill",
+      "state": "SC",
+      "zip": "29730",
+      "price": "$378,000",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2233,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/711-Forest-Rd_Rock-Hill_SC_29730_M52199-77898",
+      "isNew": true,
+      "notes": "Price reduced $7k! Sqft slightly over (2233), 2 baths. Open house today!"
+    },
     {
       "id": "29745-001",
       "address": "467 Brick House Rd",
@@ -24,7 +39,22 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/467-Brick-House-Rd_York_SC_29745_M92410-94922",
       "isNew": true,
-      "notes": "⭐ CLOSEST MATCH! 3bed/3bath perfect. Sqft slightly over (2283 vs 2200). New construction by Dream Finders Homes. 3D tour available."
+      "notes": "⭐ BEST MATCH! 3bed/3bath perfect. Sqft slightly over (2283). New construction by Dream Finders Homes. 3D tour available."
+    },
+    {
+      "id": "29720-001",
+      "address": "21216 Sanctuary Dr (Langley Plan)",
+      "city": "Lancaster",
+      "state": "SC",
+      "zip": "29720",
+      "price": "From $395,900",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2081,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/Langley_Edgewater-Lakeview-Point_21216-Sanctuary-Dr_Lancaster_SC_29720_P417000873996",
+      "isNew": true,
+      "notes": "New construction. Sqft in range (2081), 2 baths. Edgewater - Lakeview Point Community by True Homes."
     },
     {
       "id": "29710-001",
@@ -39,7 +69,7 @@
       "status": "Contingent",
       "url": "https://www.realtor.com/realestateandhomes-detail/2180-Lawrence-Rd_Clover_SC_29710_M62392-49331",
       "isNew": true,
-      "notes": "Sqft perfect (2136), but only 2 baths. Large 5 acre lot."
+      "notes": "Sqft perfect (2136), 2 baths. Large 5 acre lot. Contingent."
     },
     {
       "id": "29710-002",
@@ -54,7 +84,7 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/137-Cedar-Grove-Rd_Clover_SC_29710_M59219-21454",
       "isNew": true,
-      "notes": "Price reduced $10k. Under sqft (1750), only 2 baths."
+      "notes": "Price reduced $10k. Under sqft (1750), 2 baths."
     },
     {
       "id": "29710-003",
@@ -69,7 +99,7 @@
       "status": "Contingent",
       "url": "https://www.realtor.com/realestateandhomes-detail/1889-Berrywood-Ln_Clover_SC_29710_M62383-56721",
       "isNew": true,
-      "notes": "Sqft in range (1891), but only 2 baths. New listing."
+      "notes": "Sqft in range (1891), 2 baths. New listing, contingent."
     },
     {
       "id": "29710-004",
@@ -85,21 +115,6 @@
       "url": "https://www.realtor.com/realestateandhomes-detail/303-Kings-Mountain-St_Clover_SC_29710_M58580-80552",
       "isNew": true,
       "notes": "4bed/3bath perfect! Sqft over limit (2785). Price reduced $14k."
-    },
-    {
-      "id": "29710-005",
-      "address": "2187 Smith Road (Sandalwood)",
-      "city": "Clover",
-      "state": "SC",
-      "zip": "29710",
-      "price": "From $360,000",
-      "beds": 3,
-      "baths": 2,
-      "sqft": 1657,
-      "status": "For Sale",
-      "url": "https://www.realtor.com/realestateandhomes-detail/Sandalwood_Build-a-custom-home-on-your-land-or-ours_2187-Smith-Road_Clover_SC_29710_P417000995201",
-      "isNew": true,
-      "notes": "New construction. Under sqft, only 2 baths. Build on your land or theirs."
     }
   ]
 }
