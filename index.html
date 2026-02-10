@@ -89,6 +89,29 @@
             margin-top: 10px;
         }
 
+        .next-update {
+            text-align: right;
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .hoa-count {
+            text-align: center;
+            color: #27ae60;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f9f4;
+            border-radius: 8px;
+        }
+
+        .hoa-count.has-hoa {
+            color: #e74c3c;
+            background: #fdf2f2;
+        }
+
         .listings-container {
             padding: 20px 0;
         }
@@ -292,6 +315,8 @@
                 </div>
             </div>
             <div class="last-updated">Last updated: <span id="lastUpdated">Loading...</span></div>
+            <div class="next-update" id="nextUpdate">Check back at...</div>
+            <div class="hoa-count" id="hoaCount">Checking HOA status...</div>
         </section>
 
         <section class="listings-container">
@@ -316,6 +341,26 @@
                 const data = await response.json();
                 
                 document.getElementById('lastUpdated').textContent = new Date(data.lastUpdated).toLocaleString();
+                
+                // Calculate next update time (4 hours from last update)
+                const lastUpdate = new Date(data.lastUpdated);
+                const nextUpdate = new Date(lastUpdate.getTime() + (4 * 60 * 60 * 1000));
+                const nextTimeStr = nextUpdate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                document.getElementById('nextUpdate').textContent = `Check back at ${nextTimeStr}`;
+                
+                // Count homes with HOA
+                const hoaCount = data.listings.filter(l => l.hoa).length;
+                const hoaCountEl = document.getElementById('hoaCount');
+                if (hoaCount === 0) {
+                    hoaCountEl.textContent = 'None of the currently displayed homes have an HOA.';
+                    hoaCountEl.classList.remove('has-hoa');
+                } else if (hoaCount === 1) {
+                    hoaCountEl.textContent = '1 home currently displayed has an HOA';
+                    hoaCountEl.classList.add('has-hoa');
+                } else {
+                    hoaCountEl.textContent = `${hoaCount} homes currently displayed have an HOA`;
+                    hoaCountEl.classList.add('has-hoa');
+                }
                 
                 const grid = document.getElementById('listingsGrid');
                 
