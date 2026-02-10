@@ -438,13 +438,42 @@
                 const response = await fetch('listings.json');
                 const data = await response.json();
                 
-                document.getElementById('lastUpdated').textContent = new Date(data.lastUpdated).toLocaleString();
+                // Use lastChecked if available, otherwise fall back to lastUpdated
+                const lastChecked = data.lastChecked || data.lastUpdated;
+                document.getElementById('lastUpdated').textContent = new Date(lastChecked).toLocaleString();
                 
-                // Calculate next update time (4 hours from last update)
-                const lastUpdate = new Date(data.lastUpdated);
-                const nextUpdate = new Date(lastUpdate.getTime() + (4 * 60 * 60 * 1000));
+                // Calculate next update time (next 4 AM or 4 PM)
+                const now = new Date();
+                const lastCheck = new Date(lastChecked);
+                let nextUpdate = new Date(lastCheck);
+                
+                // If last check was at 4 AM, next is 4 PM same day
+                // If last check was at 4 PM, next is 4 AM next day
+                if (lastCheck.getHours() < 12) {
+                    // Last check was AM, next is PM same day
+                    nextUpdate.setHours(16, 0, 0, 0);
+                } else {
+                    // Last check was PM, next is AM next day
+                    nextUpdate.setDate(nextUpdate.getDate() + 1);
+                    nextUpdate.setHours(4, 0, 0, 0);
+                }
+                
+                // If next update is in the past, calculate from now
+                if (nextUpdate < now) {
+                    if (now.getHours() < 16) {
+                        nextUpdate = new Date(now);
+                        nextUpdate.setHours(16, 0, 0, 0);
+                    } else {
+                        nextUpdate = new Date(now);
+                        nextUpdate.setDate(nextUpdate.getDate() + 1);
+                        nextUpdate.setHours(4, 0, 0, 0);
+                    }
+                }
+                
                 const nextTimeStr = nextUpdate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                document.getElementById('nextUpdate').textContent = `Check back at ${nextTimeStr}`;
+                const nextDateStr = nextUpdate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                const datePrefix = nextUpdate.toDateString() !== now.toDateString() ? `${nextDateStr} at ` : '';
+                document.getElementById('nextUpdate').textContent = `Check back ${datePrefix}${nextTimeStr}`;
                 
                 // Count homes with HOA
                 const hoaCount = data.listings.filter(l => l.hoa).length;
