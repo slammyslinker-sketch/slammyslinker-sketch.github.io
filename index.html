@@ -279,6 +279,87 @@
         .status-badge.pending {
             background: #e74c3c;
         }
+
+        .job-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #28a745;
+        }
+
+        .job-section h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .job-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+        }
+
+        .job-company {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .job-location {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .job-pay {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .job-type {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .job-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .job-link:hover {
+            background: #218838;
+        }
+
+        .job-date {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 10px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -319,6 +400,22 @@
             <div class="last-updated">Last updated: <span id="lastUpdated">Loading...</span></div>
             <div class="next-update" id="nextUpdate">Check back at...</div>
             <div class="hoa-count" id="hoaCount">Checking HOA status...</div>
+        </section>
+
+        <section class="job-section">
+            <h2>💼 Willy's Promising Job Link Of The Day</h2>
+            <div class="job-card">
+                <div class="job-title">PAINTER/GENERAL LABOR/MAINTENANCE</div>
+                <div class="job-company">SSC (part of Compass Group)</div>
+                <div class="job-location">📍 Winthrop University, Rock Hill, SC 29730</div>
+                <div class="job-pay">💰 $20 - $23/hour</div>
+                <div>
+                    <span class="job-type">Full-time</span>
+                    <span class="job-type">Part-time</span>
+                </div>
+                <a href="https://www.indeed.com/viewjob?jk=fecc90dc77ca3909&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic" target="_blank" class="job-link">Apply Now →</a>
+                <div class="job-date">Posted: February 9, 2026</div>
+            </div౪
         </section>
 
         <section class="listings-container">
