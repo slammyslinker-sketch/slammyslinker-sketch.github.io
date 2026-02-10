@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Willy's Adventure Zone - House Hunting</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,142 +11,17 @@
             box-sizing: border-box;
         }
 
-        :root {
-            /* Spiderman Theme (Default) */
-            --primary-color: #e23636;
-            --secondary-color: #2b3784;
-            --accent-color: #000000;
-            --bg-color: #f0f0f0;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --hero-font: 'Bangers', cursive;
-        }
-
-        body[data-theme="batman"] {
-            --primary-color: #ffd700;
-            --secondary-color: #1a1a2e;
-            --accent-color: #000000;
-            --bg-color: #0f0f1a;
-            --card-bg: #1a1a2e;
-            --text-color: #e0e0e0;
-        }
-
-        body[data-theme="superman"] {
-            --primary-color: #e23636;
-            --secondary-color: #0066cc;
-            --accent-color: #ffd700;
-            --bg-color: #e8f4fc;
-            --card-bg: #ffffff;
-            --text-color: #1a1a2e;
-        }
-
-        body[data-theme="hulk"] {
-            --primary-color: #8bc34a;
-            --secondary-color: #4caf50;
-            --accent-color: #000000;
-            --bg-color: #e8f5e9;
-            --card-bg: #ffffff;
-            --text-color: #2e7d32;
-        }
-
         body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Animated GIF Background */
-        .hero-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.08;
-            background-size: cover;
-            background-position: center;
-            animation: heroPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes heroPulse {
-            0%, 100% { transform: scale(1); opacity: 0.08; }
-            50% { transform: scale(1.05); opacity: 0.12; }
-        }
-
-        body[data-theme="spiderman"] .hero-bg {
-            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3Q3Z3R4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/xT9IgG50Fb7Mi0prBC/giphy.gif');
-        }
-
-        body[data-theme="batman"] .hero-bg {
-            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3Q3Z3R4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/3o7TKSjRrfIPjeiVyM/giphy.gif');
-        }
-
-        body[data-theme="superman"] .hero-bg {
-            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3Q3Z3R4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eWZ5d3V4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/3o7TKU8vL5z1l8J5hK/giphy.gif');
-        }
-
-        body[data-theme="hulk"] .hero-bg {
-            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazFydWl3aHVhcW1xbnBxcG1xbnBxcG1xbnBxcG1xbnBxcG1xbnB4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/l3q2X8bRpI3U8uVF6/giphy.gif');
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
         }
 
         header {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
             color: white;
             padding: 20px 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 10;
-        }
-
-        .theme-switcher {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .theme-btn {
-            padding: 8px 16px;
-            border: 2px solid white;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: var(--hero-font);
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .theme-btn:hover, .theme-btn.active {
-            background: white;
-            color: var(--secondary-color);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255,255,255,0.5);
-        }
-
-        body[data-theme="spiderman"] .theme-btn.spiderman {
-            background: white;
-            color: #e23636;
-        }
-
-        body[data-theme="batman"] .theme-btn.batman {
-            background: white;
-            color: #1a1a2e;
-        }
-
-        body[data-theme="superman"] .theme-btn.superman {
-            background: white;
-            color: #0066cc;
-        }
-
-        body[data-theme="hulk"] .theme-btn.hulk {
-            background: white;
-            color: #4caf50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .container {
@@ -169,24 +42,17 @@
         }
 
         .search-criteria {
-            background: var(--card-bg);
+            background: white;
             padding: 20px;
             margin: 20px 0;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 3px solid var(--primary-color);
-            position: relative;
-            z-index: 5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .search-criteria h2 {
-            color: var(--primary-color);
+            color: #1e3a5f;
             margin-bottom: 15px;
-            font-size: 1.5rem;
-            font-family: var(--hero-font);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 0 var(--accent-color);
+            font-size: 1.3rem;
         }
 
         .criteria-grid {
@@ -197,26 +63,23 @@
 
         .criteria-item {
             padding: 12px;
-            background: linear-gradient(135deg, var(--bg-color) 0%, var(--card-bg) 100%);
+            background: #f8f9fa;
             border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            border: 2px solid var(--secondary-color);
+            border-left: 4px solid #2d5a87;
         }
 
         .criteria-item .label {
             font-size: 0.85rem;
-            color: var(--text-color);
+            color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            opacity: 0.8;
         }
 
         .criteria-item .value {
             font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-color);
+            font-weight: 600;
+            color: #1e3a5f;
             margin-top: 4px;
-            font-family: var(--hero-font);
         }
 
         .last-updated {
@@ -260,72 +123,48 @@
         }
 
         .listing-card {
-            background: var(--card-bg);
+            background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 2px solid var(--secondary-color);
-            position: relative;
-            z-index: 5;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .listing-card:hover {
-            transform: translateY(-8px) rotate(1deg);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
 
         .listing-image {
             width: 100%;
             height: 220px;
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            background: linear-gradient(135deg, #e0e0e0 0%, #f0f0f0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 4rem;
-            color: white;
+            color: #ccc;
             position: relative;
             overflow: hidden;
-        }
-
-        .listing-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/></svg>") center/50px;
-            opacity: 0.3;
         }
 
         .listing-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
-        }
-
-        .listing-card:hover .listing-image img {
-            transform: scale(1.05);
         }
 
         .listing-badge {
             position: absolute;
             top: 15px;
             left: 15px;
-            background: var(--primary-color);
+            background: #e74c3c;
             color: white;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
-            font-family: var(--hero-font);
-            letter-spacing: 1px;
-            z-index: 10;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .listing-content {
@@ -335,46 +174,43 @@
         .listing-price {
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #1e3a5f;
             margin-bottom: 8px;
-            font-family: var(--hero-font);
-            text-shadow: 1px 1px 0 var(--accent-color);
         }
 
         .listing-address {
             font-size: 1.1rem;
-            color: var(--text-color);
+            color: #333;
             margin-bottom: 5px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .listing-hoa {
             font-size: 1.25rem;
-            color: var(--primary-color);
+            color: #e74c3c;
             font-weight: 700;
             margin: 8px 0;
         }
 
         .listing-hoa-fee {
             font-size: 1.15rem;
-            color: var(--primary-color);
+            color: #e74c3c;
             font-weight: 600;
             margin-bottom: 10px;
         }
 
         .listing-location {
-            color: var(--text-color);
+            color: #666;
             font-size: 0.95rem;
             margin-bottom: 15px;
-            opacity: 0.8;
         }
 
         .listing-details {
             display: flex;
             gap: 20px;
             padding: 15px 0;
-            border-top: 2px solid var(--secondary-color);
-            border-bottom: 2px solid var(--secondary-color);
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
             margin-bottom: 15px;
         }
 
@@ -382,9 +218,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            color: var(--text-color);
+            color: #555;
             font-size: 0.95rem;
-            font-weight: 500;
         }
 
         .detail-icon {
@@ -393,28 +228,23 @@
 
         .listing-link {
             display: inline-block;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: #2d5a87;
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 700;
-            transition: all 0.3s;
-            font-family: var(--hero-font);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 2px solid var(--accent-color);
+            font-weight: 600;
+            transition: background 0.2s;
         }
 
         .listing-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px var(--primary-color);
+            background: #1e3a5f;
         }
 
         .no-listings {
             text-align: center;
             padding: 60px 20px;
-            color: var(--text-color);
+            color: #666;
         }
 
         .no-listings-icon {
@@ -423,26 +253,23 @@
         }
 
         footer {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            background: #1e3a5f;
             color: white;
             text-align: center;
             padding: 30px 0;
             margin-top: 50px;
-            position: relative;
-            z-index: 5;
         }
 
         .status-badge {
             display: inline-block;
-            background: var(--secondary-color);
+            background: #27ae60;
             color: white;
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
             margin-left: 10px;
             text-transform: uppercase;
-            font-family: var(--hero-font);
         }
 
         .status-badge.contingent {
@@ -456,24 +283,17 @@
 </head>
 <body>
     <header>
-        <div class="hero-bg"></div>
         <div class="container">
             <h1>
                 <span class="logo-icon">🏠</span>
                 Willy's Adventure Zone
             </h1>
-            <div class="theme-switcher">
-                <button class="theme-btn spiderman" onclick="setTheme('spiderman')">🕷️ Spiderman</button>
-                <button class="theme-btn batman" onclick="setTheme('batman')">🦇 Batman</button>
-                <button class="theme-btn superman" onclick="setTheme('superman')">🦸 Superman</button>
-                <button class="theme-btn hulk" onclick="setTheme('hulk')"> Hulk</button>
-            </div>
         </div>
     </header>
 
     <main class="container">
         <section class="search-criteria">
-            <h2>🦸 Willy's Search Criteria</h2>
+            <h2>🔍 Search Criteria</h2>
             <div class="criteria-grid">
                 <div class="criteria-item">
                     <div class="label">Location</div>
@@ -600,37 +420,6 @@
                 console.error('Error loading listings:', error);
             }
         }
-
-        // Set theme function to switch between comic book themes
-        function setTheme(themeName) {
-            // Set the data-theme attribute on the body
-            document.body.setAttribute('data-theme', themeName);
-            
-            // Update active state of theme buttons
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Add active class to clicked button
-            const activeBtn = document.querySelector(`.theme-btn.${themeName}`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
-            
-            // Store selected theme in localStorage so it persists on refresh
-            localStorage.setItem('selectedTheme', themeName);
-        }
-
-        // Check for saved theme on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                setTheme(savedTheme);
-            } else {
-                // Default to spiderman theme if no saved theme
-                setTheme('spiderman');
-            }
-        });
 
         loadListings();
     </script>
