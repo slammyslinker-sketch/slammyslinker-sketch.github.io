@@ -42,6 +42,7 @@ function saveListings(listings) {
   
   const data = {
     lastUpdated: new Date().toISOString(),
+    lastChecked: new Date().toISOString(),
     searchCriteria: {
       zips: CONFIG.zips,
       priceMin: CONFIG.priceMin,
@@ -57,6 +58,22 @@ function saveListings(listings) {
   
   fs.writeFileSync(path.join(CONFIG.repoPath, CONFIG.listingsFile), JSON.stringify(data, null, 2));
   console.log(`Saved ${listings.length} listings (${listings.filter(l => l.isNew).length} new)`);
+}
+
+// Update timestamp even when no new listings found
+function updateTimestamp() {
+  const filePath = path.join(CONFIG.repoPath, CONFIG.listingsFile);
+  
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    data.lastChecked = new Date().toISOString();
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    console.log('Updated lastChecked timestamp');
+    return true;
+  } catch (error) {
+    console.error('Could not update timestamp:', error.message);
+    return false;
+  }
 }
 
 // Git commit and push
@@ -88,19 +105,19 @@ async function main() {
 }
 
 // Export for use by automation
-module.exports = { CONFIG, saveListings, gitPush, loadExistingListings };
+module.exports = { CONFIG, saveListings, gitPush, loadExistingListings, updateTimestamp };
 
-// If run directly, show instructions
+// Main function
+async function main() {
+  console.log('Starting Realtor.com scrape...');
+  console.log('Zips:', CONFIG.zips.join(', '));
+  
+  // Update timestamp to show we checked, even if scraping fails
+  updateTimestamp();
+  gitPush();
+}
+
+// If run directly
 if (require.main === module) {
-  console.log(`
-To scrape Realtor.com, use browser automation:
-
-1. Navigate to: https://www.realtor.com/realestateandhomes-search/<ZIP>
-2. Apply filters: Price $300k-$400k, 3-4 beds, 2.5+ baths, 1800-2200 sqft
-3. Extract listing data
-4. Save to listings.json
-5. Push to GitHub
-
-The cron job will trigger a browser session to perform these steps.
-`);
+  main().catch(console.error);
 }
