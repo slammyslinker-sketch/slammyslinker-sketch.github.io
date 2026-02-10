@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-09T23:58:00.000Z",
+  "lastUpdated": "2026-02-10T00:05:00.000Z",
   "searchCriteria": {
     "zips": ["29710", "29745", "29720", "29730"],
     "priceMin": 300000,
@@ -23,6 +23,7 @@
       "sqft": 2233,
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/711-Forest-Rd_Rock-Hill_SC_29730_M52199-77898",
+      "image": "images/711-forest-rd.jpg",
       "isNew": true,
       "notes": "Price reduced $7k! Sqft slightly over (2233), 2 baths. Open house today!"
     },
@@ -38,6 +39,7 @@
       "sqft": 2283,
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/467-Brick-House-Rd_York_SC_29745_M92410-94922",
+      "image": "images/467-brick-house-rd.jpg",
       "isNew": true,
       "notes": "⭐ BEST MATCH! 3bed/3bath perfect. Sqft slightly over (2283). New construction by Dream Finders Homes. 3D tour available."
     },
@@ -53,6 +55,7 @@
       "sqft": 2081,
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/Langley_Edgewater-Lakeview-Point_21216-Sanctuary-Dr_Lancaster_SC_29720_P417000873996",
+      "image": "images/21216-sanctuary-dr.jpg",
       "isNew": true,
       "notes": "New construction. Sqft in range (2081), 2 baths. Edgewater - Lakeview Point Community by True Homes."
     },
@@ -68,6 +71,7 @@
       "sqft": 2136,
       "status": "Contingent",
       "url": "https://www.realtor.com/realestateandhomes-detail/2180-Lawrence-Rd_Clover_SC_29710_M62392-49331",
+      "image": "images/2180-lawrence-rd.jpg",
       "isNew": true,
       "notes": "Sqft perfect (2136), 2 baths. Large 5 acre lot. Contingent."
     },
@@ -83,6 +87,7 @@
       "sqft": 1750,
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/137-Cedar-Grove-Rd_Clover_SC_29710_M59219-21454",
+      "image": "images/137-cedar-grove-rd.jpg",
       "isNew": true,
       "notes": "Price reduced $10k. Under sqft (1750), 2 baths."
     },
@@ -98,6 +103,7 @@
       "sqft": 1891,
       "status": "Contingent",
       "url": "https://www.realtor.com/realestateandhomes-detail/1889-Berrywood-Ln_Clover_SC_29710_M62383-56721",
+      "image": "images/1889-berrywood-ln.jpg",
       "isNew": true,
       "notes": "Sqft in range (1891), 2 baths. New listing, contingent."
     },
@@ -113,6 +119,7 @@
       "sqft": 2785,
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/303-Kings-Mountain-St_Clover_SC_29710_M58580-80552",
+      "image": "images/303-kings-mountain-st.jpg",
       "isNew": true,
       "notes": "4bed/3bath perfect! Sqft over limit (2785). Price reduced $14k."
     }

@@ -318,8 +318,8 @@
                 
                 grid.innerHTML = data.listings.map(listing => `
                     <article class="listing-card">
-                        <div class="listing-image" style="position: relative;">
-                            🏠
+                        <div class="listing-image" style="position: relative; overflow: hidden;">
+                            ${listing.image ? `<img src="${listing.image}" alt="${listing.address}" style="width: 100%; height: 100%; object-fit: cover;">` : '🏠'}
                             ${listing.isNew ? '<span class="listing-badge">New</span>' : ''}
                         </div>
                         <div class="listing-content">
