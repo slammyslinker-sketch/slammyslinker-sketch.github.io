@@ -160,6 +160,20 @@
             font-weight: 500;
         }
 
+        .listing-hoa {
+            font-size: 1.25rem;
+            color: #e74c3c;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .listing-hoa-fee {
+            font-size: 1.15rem;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
         .listing-location {
             color: #666;
             font-size: 0.95rem;
@@ -328,6 +342,7 @@
                                 <span class="status-badge ${listing.status.toLowerCase()}">${listing.status}</span>
                             </div>
                             <div class="listing-address">${listing.address}</div>
+                            ${listing.hoa ? `<div class="listing-hoa">HOA</div><div class="listing-hoa-fee">${listing.hoa}</div>` : ''}
                             <div class="listing-location">${listing.city}, ${listing.state} ${listing.zip}</div>
                             <div class="listing-details">
                                 <div class="detail-item">
