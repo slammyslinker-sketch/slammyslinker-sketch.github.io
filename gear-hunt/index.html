@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear Hunt - Music Gear Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            padding: 30px 0;
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+        }
+
+        .search-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-panel h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            padding: 14px 18px;
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #e94560;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .search-btn {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sources-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .source-tag {
+            padding: 6px 14px;
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .source-tag.inactive {
+            background: rgba(100, 100, 100, 0.2);
+            color: #888;
+            border-color: rgba(100, 100, 100, 0.3);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 20px;
+        }
+
+        .results-header h2 {
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .results-count {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .gear-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gear-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(233, 69, 96, 0.3);
+        }
+
+        .gear-image {
+            height: 200px;
+            background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gear-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gear-source {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .gear-content {
+            padding: 20px;
+        }
+
+        .gear-price {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .gear-title {
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .gear-condition {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .gear-condition.used {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .gear-location {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .gear-link {
+            display: block;
+            padding: 12px;
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .gear-link:hover {
+            background: #e94560;
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(233, 69, 96, 0.2);
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>
+                <span class="logo-icon">🎸</span>
+                Gear Hunt
+            </h1>
+            <nav style="margin-top: 15px;">
+                <a href="/" style="color: white; text-decoration: none; margin-right: 20px; opacity: 0.9;">🏠 House Hunt</a>
+                <a href="/gear-hunt/" style="color: white; text-decoration: none; opacity: 0.9;">🎸 Gear Hunt</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="search-panel">
+            <h2>🔍 Find Your Gear</h2>
+            <form class="search-form" id="searchForm">
+                <div class="form-group">
+                    <label for="searchTerm">What are you looking for?</label>
+                    <input type="text" id="searchTerm" placeholder="e.g., Fender Stratocaster, Tube Screamer..." required>
+                </div>
+                <div class="form-group">
+                    <label for="zipCode">Your ZIP Code</label>
+                    <input type="text" id="zipCode" placeholder="e.g., 29710" pattern="[0-9]{5}" required>
+                </div>
+                <button type="submit" class="search-btn" id="searchBtn">Search Gear</button>
+            </form>
+            <div class="sources-bar">
+                <span class="source-tag">Reverb</span>
+                <span class="source-tag">eBay</span>
+                <span class="source-tag">MusicGoRound</span>
+                <span class="source-tag">Guitar Center Used</span>
+                <span class="source-tag inactive">Craigslist</span>
+                <span class="source-tag inactive">Facebook Marketplace</span>
+            </div>
+        </section>
+
+        <div class="results-header">
+            <h2>Latest Results</h2>
+            <span class="results-count" id="resultsCount">Search to see results</span>
+        </div>
+
+        <div id="resultsContainer">
+            <div class="no-results">
+                <div class="no-results-icon">🎸</div>
+                <h2>Ready to hunt for gear?</h2>
+                <p>Enter a search term and your ZIP code above to find deals across multiple sites.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>🎸 Gear Hunt - Aggregating music gear from across the web</p>
+    </footer>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const searchTerm = document.getElementById('searchTerm').value;
+            const zipCode = document.getElementById('zipCode').value;
+            const searchBtn = document.getElementById('searchBtn');
+            const container = document.getElementById('resultsContainer');
+            const countEl = document.getElementById('resultsCount');
+            
+            // Show loading
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Scouring the web for ${searchTerm}...</p>
+                </div>
+            `;
+            
+            // In a real implementation, this would trigger the scraper
+            // For now, load any existing cached results or show placeholder
+            try {
+                const response = await fetch('gear.json');
+                const data = await response.json();
+                
+                // Filter results based on search
+                const filtered = data.listings.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <div class="no-results-icon">😕</div>
+                            <h2>No results found</h2>
+                            <p>No cached results for "${searchTerm}". Run the scraper to search live sites.</p>
+                        </div>
+                    `;
+                    countEl.textContent = '0 results';
+                } else {
+                    displayResults(filtered);
+                    countEl.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔧</div>
+                        <h2>No cached data</h2>
+                        <p>Run a search to populate the database.</p>
+                    </div>
+                `;
+                countEl.textContent = 'No data';
+            }
+            
+            searchBtn.disabled = false;
+            searchBtn.textContent = 'Search Gear';
+        });
+        
+        function displayResults(listings) {
+            const container = document.getElementById('resultsContainer');
+            
+            container.innerHTML = `
+                <div class="listings-grid">
+                    ${listings.map(item => `
+                        <article class="gear-card">
+                            <div class="gear-image">
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}">` : '🎸'}
+                                <span class="gear-source">${item.source}</span>
+                            </div>
+                            <div class="gear-content">
+                                <div class="gear-price">${item.price}</div>
+                                <div class="gear-title">${item.title}</div>
+                                <span class="gear-condition ${item.condition?.toLowerCase() || 'used'}">${item.condition || 'Used'}</span>
+                                <div class="gear-location">📍 ${item.location || 'Location unknown'}</div>
+                                <a href="${item.url}" target="_blank" class="gear-link">View on ${item.source} →</a>
+                            </div>
+                        </article>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // Load any cached results on page load
+        async function loadCachedResults() {
+            try {
+                const response = await fetch('gear.json');
+                const data = await response.json();
+                
+                if (data.listings?.length > 0) {
+                    document.getElementById('resultsCount').textContent = 
+                        `${data.listings.length} cached listing${data.listings.length !== 1 ? 's' : ''}`;
+                    displayResults(data.listings);
+                    
+                    // Pre-fill form with last search if available
+                    if (data.lastSearch) {
+                        document.getElementById('searchTerm').value = data.lastSearch.term || '';
+                        document.getElementById('zipCode').value = data.lastSearch.zip || '';
+                    }
+                }
+            } catch (error) {
+                // No cached data yet
+            }
+        }
+        
+        loadCachedResults();
+    </script>
+</body>
+</html>
