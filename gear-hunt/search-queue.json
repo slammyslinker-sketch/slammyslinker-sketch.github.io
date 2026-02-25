@@ -1,5 +1,6 @@
 {
   "pendingSearches": [],
-  "processing": false,
-  "lastChecked": null
+  "processing": null,
+  "lastChecked": null,
+  "completedSearches": []
 }

@@ -278,6 +278,137 @@
             margin-bottom: 20px;
         }
 
+        /* Queue Card Styles */
+        .queue-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .queue-card h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .queue-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #e94560;
+        }
+
+        .queue-item.processing {
+            border-left-color: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .queue-item.completed {
+            border-left-color: #2196f3;
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+        }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .queue-term {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .queue-status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+        }
+
+        .queue-status.processing {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .queue-status.completed {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        .queue-timer {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.processing {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            animation: progressStripes 1s linear infinite;
+            background-size: 20px 20px;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.15) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.15) 50%,
+                rgba(255, 255, 255, 0.15) 75%,
+                transparent 75%,
+                transparent
+            );
+        }
+
+        @keyframes progressStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
+        }
+
+        .queue-limit {
+            text-align: center;
+            padding: 15px;
+            color: #888;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .queue-limit.at-max {
+            color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -353,6 +484,17 @@
             </div>
         </section>
 
+        <!-- Queue Card -->
+        <section class="queue-card" id="queueCard" style="display: none;">
+            <h3>⏳ Your Queued Searches <span id="queueCount"></span></h3>
+            <div class="queue-list" id="queueList">
+                <!-- Queue items will be rendered here -->
+            </div>
+            <div class="queue-limit" id="queueLimit">
+                You can queue up to 3 searches
+            </div>
+        </section>
+
         <div class="results-header">
             <h2>Latest Results</h2>
             <span class="results-count" id="resultsCount">Search to see results</span>
@@ -397,53 +539,225 @@
                 return;
             }
             
-            // Show loading
-            searchBtn.disabled = true;
-            searchBtn.textContent = 'Adding to queue...';
+            // Get current queue
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            const completed = JSON.parse(localStorage.getItem('gearHuntCompleted') || '[]');
             
-            // Create queue entry data
+            // Check if at max (3 searches)
+            if (pending.length >= 3) {
+                alert('You can only have 3 searches queued at a time. Please wait for one to complete.');
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search Gear';
+                return;
+            }
+            
+            // Create queue entry
             const queueEntry = {
                 term: searchTerm,
                 zip: zipCode,
                 requestedAt: new Date().toISOString(),
-                id: Math.random().toString(36).substring(7)
+                id: Math.random().toString(36).substring(7),
+                status: 'queued',
+                position: pending.length + 1
             };
             
-            // For now, show instructions since we need server-side to write to file
-            // In production, this would call a serverless function or API
+            // Add to queue
+            pending.push(queueEntry);
+            localStorage.setItem('gearHuntPending', JSON.stringify(pending));
+            
+            // Update UI
+            updateQueueDisplay();
+            renderQueueCard();
+            
+            // Show confirmation
             document.getElementById('resultsContainer').innerHTML = `
                 <div class="no-results">
                     <div class="no-results-icon">📋</div>
                     <h2>Search Queued!</h2>
-                    <p>Your search for "<strong>${searchTerm}</strong>" in ZIP <strong>${zipCode}</strong> has been queued.</p>
-                    <p style="margin-top: 15px; color: #666;">The agent checks for new searches every 10 minutes.</p>
-                    <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">
-                        Search ID: ${queueEntry.id}<br>
-                        Requested: ${new Date().toLocaleString()}
-                    </p>
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(233, 69, 96, 0.1); border-radius: 8px; text-align: left;">
+                    <p>Your search for "<strong>${searchTerm}</strong>" in ZIP <strong>${zipCode}</strong> has been added to the queue.</p>
+                    <p style="margin-top: 15px; color: #666;">Position: #${queueEntry.position} | Search ID: ${queueEntry.id}</p>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(233, 69, 96, 0.1); border-radius: 8px;">
                         <p style="font-size: 0.85rem; color: #aaa;">
-                            <strong>What's happening:</strong><br>
-                            1. Your search is added to the queue<br>
-                            2. Agent checks queue every 10 minutes<br>
-                            3. Results appear here when ready<br>
-                            4. Check back in ~10 minutes!
+                            💡 <strong>Tip:</strong> Tell your AI assistant: "Queue gear search for ${searchTerm} in ${zipCode}"
                         </p>
                     </div>
                 </div>
             `;
             
+            // Clear form
+            document.getElementById('searchTerm').value = '';
+            
             searchBtn.disabled = false;
             searchBtn.textContent = 'Search Gear';
-            
-            // Store in localStorage so we can show pending status
-            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
-            pending.push(queueEntry);
-            localStorage.setItem('gearHuntPending', JSON.stringify(pending));
         });
+        
+        // Update queue display
+        function updateQueueDisplay() {
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            const queueCard = document.getElementById('queueCard');
+            const queueCount = document.getElementById('queueCount');
+            const queueLimit = document.getElementById('queueLimit');
+            
+            if (pending.length === 0) {
+                queueCard.style.display = 'none';
+                return;
+            }
+            
+            queueCard.style.display = 'block';
+            queueCount.textContent = `(${pending.length}/3)`;
+            
+            if (pending.length >= 3) {
+                queueLimit.classList.add('at-max');
+                queueLimit.textContent = 'Queue is full - wait for a search to complete';
+            } else {
+                queueLimit.classList.remove('at-max');
+                queueLimit.textContent = `${3 - pending.length} slot${3 - pending.length !== 1 ? 's' : ''} remaining`;
+            }
+        }
+        
+        // Render queue items with timers
+        function renderQueueCard() {
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            const queueList = document.getElementById('queueList');
+            
+            if (pending.length === 0) {
+                queueList.innerHTML = '';
+                return;
+            }
+            
+            queueList.innerHTML = pending.map((item, index) => {
+                const requestedTime = new Date(item.requestedAt).getTime();
+                const now = Date.now();
+                const elapsed = now - requestedTime;
+                const tenMinutes = 10 * 60 * 1000; // 10 minutes in ms
+                
+                let statusHtml = '';
+                let progressPercent = 0;
+                
+                if (item.status === 'processing') {
+                    // Show "in progress" with animated progress bar
+                    progressPercent = item.progress || 30;
+                    statusHtml = `
+                        <div class="queue-timer">Processing... scraping sites</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill processing" style="width: ${progressPercent}%"></div>
+                        </div>
+                    `;
+                } else if (item.status === 'completed') {
+                    statusHtml = `
+                        <div class="queue-timer">✅ Complete!</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: #2196f3;"></div>
+                        </div>
+                    `;
+                } else {
+                    // Queued - show countdown
+                    const timeRemaining = Math.max(0, tenMinutes - elapsed);
+                    const minutes = Math.floor(timeRemaining / 60000);
+                    const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                    
+                    if (timeRemaining === 0) {
+                        // Time elapsed - simulate processing state
+                        item.status = 'processing';
+                        item.progress = 10;
+                        localStorage.setItem('gearHuntPending', JSON.stringify(pending));
+                        statusHtml = `
+                            <div class="queue-timer">Search starting...</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill processing" style="width: 10%"></div>
+                            </div>
+                        `;
+                    } else {
+                        progressPercent = (elapsed / tenMinutes) * 100;
+                        statusHtml = `
+                            <div class="queue-timer">Starting in ~${minutes}m ${seconds.toString().padStart(2, '0')}s</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                const statusClass = item.status === 'processing' ? 'processing' : (item.status === 'completed' ? 'completed' : '');
+                const statusLabel = item.status === 'processing' ? 'Processing' : (item.status === 'completed' ? 'Done' : 'Queued');
+                
+                return `
+                    <div class="queue-item ${statusClass}">
+                        <div class="queue-header">
+                            <span class="queue-term">${item.term} (${item.zip})</span>
+                            <span class="queue-status ${statusClass}">${statusLabel}</span>
+                        </div>
+                        ${statusHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Animate progress for processing items
+        function animateProgress() {
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            let updated = false;
+            
+            pending.forEach(item => {
+                if (item.status === 'processing') {
+                    item.progress = (item.progress || 10) + 5;
+                    if (item.progress >= 100) {
+                        item.progress = 100;
+                        item.status = 'completed';
+                        // Move to completed after a delay
+                        setTimeout(() => {
+                            removeFromQueue(item.id);
+                            addToCompleted(item);
+                            loadCachedResults(); // Refresh results
+                        }, 3000);
+                    }
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                localStorage.setItem('gearHuntPending', JSON.stringify(pending));
+                renderQueueCard();
+            }
+        }
+        
+        function removeFromQueue(id) {
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            const filtered = pending.filter(item => item.id !== id);
+            localStorage.setItem('gearHuntPending', JSON.stringify(filtered));
+            updateQueueDisplay();
+        }
+        
+        function addToCompleted(item) {
+            const completed = JSON.parse(localStorage.getItem('gearHuntCompleted') || '[]');
+            completed.unshift({
+                ...item,
+                completedAt: new Date().toISOString()
+            });
+            // Keep only last 10
+            if (completed.length > 10) completed.pop();
+            localStorage.setItem('gearHuntCompleted', JSON.stringify(completed));
+        }
+        
+        // Update timers every second
+        setInterval(() => {
+            renderQueueCard();
+            animateProgress();
+        }, 1000);
         
         function displayResults(listings) {
             const container = document.getElementById('resultsContainer');
+            
+            if (!listings || listings.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h2>No results yet</h2>
+                        <p>Submit a search and check back in ~10 minutes!</p>
+                    </div>
+                `;
+                return;
+            }
             
             container.innerHTML = `
                 <div class="listings-grid">
@@ -466,7 +780,7 @@
             `;
         }
         
-        // Load any cached results on page load
+        // Load cached results on page load
         async function loadCachedResults() {
             try {
                 const response = await fetch('gear.json');
@@ -474,17 +788,26 @@
                 
                 if (data.listings?.length > 0) {
                     document.getElementById('resultsCount').textContent = 
-                        `${data.listings.length} cached listing${data.listings.length !== 1 ? 's' : ''}`;
+                        `${data.listings.length} result${data.listings.length !== 1 ? 's' : ''}`;
                     displayResults(data.listings);
                     
                     // Pre-fill form with last search if available
                     if (data.lastSearch) {
-                        document.getElementById('searchTerm').value = data.lastSearch.term || '';
-                        document.getElementById('zipCode').value = data.lastSearch.zip || '';
+                        document.getElementById('searchTerm').placeholder = `Last: ${data.lastSearch.term}`;
                     }
                 }
             } catch (error) {
                 // No cached data yet
+            }
+        }
+        
+        // Initialize
+        loadCachedResults();
+        updateQueueDisplay();
+        renderQueueCard();
+    </script>
+</body>
+</html>
             }
         }
         
