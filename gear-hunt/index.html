@@ -539,13 +539,17 @@
                 return;
             }
             
-            // Get current queue
-            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
-            const completed = JSON.parse(localStorage.getItem('gearHuntCompleted') || '[]');
-            
-            // Check if at max (3 searches)
+            // Check max 3 searches
             if (pending.length >= 3) {
                 alert('You can only have 3 searches queued at a time. Please wait for one to complete.');
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search Gear';
+                return;
+            }
+            
+            // Validate length (max 55 chars for security)
+            if (searchTerm.length < 2 || searchTerm.length > 55) {
+                alert('Search term must be between 2 and 55 characters');
                 searchBtn.disabled = false;
                 searchBtn.textContent = 'Search Gear';
                 return;
