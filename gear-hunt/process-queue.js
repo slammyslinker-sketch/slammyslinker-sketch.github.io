@@ -283,6 +283,147 @@ async function scrapeEbay(browser, searchTerm, zipCode, onProgress) {
   return listings;
 }
 
+// ZIP to Craigslist subdomain mapping (major metros)
+function getCraigslistSubdomain(zipCode) {
+  const prefix2 = zipCode.substring(0, 2);
+  const prefix3 = zipCode.substring(0, 3);
+  
+  const cityMap = {
+    // California
+    '90': 'losangeles', '91': 'losangeles', '92': 'losangeles', '93': 'losangeles',
+    '94': 'sandiego', '95': 'sfbay', '96': 'sfbay',
+    // Texas
+    '75': 'dallas', '76': 'dallas', '77': 'houston', '78': 'sanantonio', '79': 'austin',
+    // Florida
+    '32': 'jacksonville', '33': 'miami', '34': 'miami',
+    // New York
+    '10': 'newyork', '11': 'newyork', '12': 'albany',
+    // Illinois
+    '60': 'chicago', '61': 'chicago',
+    // Pennsylvania
+    '15': 'pittsburgh', '16': 'pittsburgh', '17': 'philadelphia', '18': 'philadelphia', '19': 'philadelphia',
+    // Ohio
+    '43': 'columbus', '44': 'cleveland', '45': 'cincinnati',
+    // Georgia
+    '30': 'atlanta', '31': 'atlanta',
+    // North Carolina
+    '27': 'raleigh', '28': 'charlotte', '29': 'charlotte',
+    // Michigan
+    '48': 'detroit', '49': 'grandrapids',
+    // Arizona
+    '85': 'phoenix', '86': 'phoenix',
+    // Massachusetts
+    '01': 'boston', '02': 'boston',
+    // Washington
+    '98': 'seattle', '99': 'seattle',
+    // Colorado
+    '80': 'denver', '81': 'denver',
+    // Tennessee
+    '37': 'nashville', '38': 'memphis',
+    // Missouri
+    '63': 'stlouis', '64': 'kansascity', '65': 'kansascity',
+    // Indiana
+    '46': 'indianapolis', '47': 'fortwayne',
+    // Maryland
+    '21': 'baltimore',
+    // Wisconsin
+    '53': 'milwaukee', '54': 'madison',
+    // Oregon
+    '97': 'portland',
+    // Nevada
+    '89': 'lasvegas',
+    // Minnesota
+    '55': 'minneapolis', '56': 'minneapolis',
+    // Louisiana
+    '70': 'neworleans',
+    // Kentucky
+    '40': 'louisville',
+    // Alabama
+    '35': 'huntsville', '36': 'birmingham',
+    // South Carolina
+    '29': 'charlotte', '25': 'greenville',
+    // Oklahoma
+    '73': 'oklahomacity', '74': 'tulsa',
+    // Connecticut
+    '06': 'hartford',
+    // Iowa
+    '52': 'desmoines',
+    // Arkansas
+    '72': 'littlerock',
+    // Mississippi
+    '39': 'jackson',
+    // Kansas
+    '66': 'wichita', '67': 'wichita',
+    // Utah
+    '84': 'saltlakecity',
+    // New Mexico
+    '87': 'albuquerque', '88': 'albuquerque',
+    // Nebraska
+    '68': 'omaha', '69': 'omaha',
+    // Idaho
+    '83': 'boise',
+    // Hawaii
+    '96': 'honolulu',
+    // Alaska
+    '99': 'anchorage',
+  };
+  
+  return cityMap[prefix2] || cityMap[prefix3] || 'newyork';
+}
+
+// Scrape Craigslist
+async function scrapeCraigslist(browser, searchTerm, zipCode, onProgress) {
+  const listings = [];
+  let page = null;
+  
+  try {
+    const subdomain = getCraigslistSubdomain(zipCode);
+    onProgress(67, `Loading Craigslist ${subdomain}...`);
+    
+    page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+    
+    const url = `https://${subdomain}.craigslist.org/search/sss?query=${encodeURIComponent(searchTerm)}`;
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
+    
+    onProgress(80, 'Extracting Craigslist listings...');
+    
+    const items = await page.evaluate(() => {
+      const results = [];
+      const listings = document.querySelectorAll('.result-row, .cl-search-result');
+      
+      listings.forEach(item => {
+        const titleEl = item.querySelector('.result-title, .title');
+        const priceEl = item.querySelector('.result-price, .price');
+        const linkEl = item.querySelector('a');
+        const locationEl = item.querySelector('.result-hood, .location');
+        
+        if (titleEl) {
+          results.push({
+            title: titleEl.textContent.trim(),
+            price: priceEl ? priceEl.textContent.trim() : 'Contact for price',
+            url: linkEl ? linkEl.href : null,
+            source: 'Craigslist',
+            condition: 'Used',
+            location: locationEl ? locationEl.textContent.trim() : 'Local'
+          });
+        }
+      });
+      
+      return results.slice(0, 10);
+    });
+    
+    listings.push(...items);
+    onProgress(88, `Found ${listings.length} on Craigslist`);
+  } catch (e) {
+    console.log('Craigslist error:', e.message);
+  } finally {
+    if (page) await page.close();
+  }
+  
+  return listings;
+}
+
 // Save results
 function saveGearResults(searchTerm, zipCode, listings) {
   const data = {
@@ -335,6 +476,7 @@ async function processSearch(browser, search) {
     
     allListings.push(...await scrapeReverb(browser, search.term, onProgress));
     allListings.push(...await scrapeEbay(browser, search.term, search.zip, onProgress));
+    allListings.push(...await scrapeCraigslist(browser, search.term, search.zip, onProgress));
     
     onProgress(90, 'Finding best prices...');
     const top3 = getTop3Cheapest(allListings);
