@@ -1,0 +1,93 @@
+name: Gear Hunt Scraper
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  scrape:
+    # Only run for issues with the "gear-search" label or specific title format
+    if: contains(github.event.issue.title, '[Gear Search]')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install Playwright
+      run: |
+        npm init -y
+        npm install playwright
+        npx playwright install chromium
+        
+    - name: Parse and validate search request
+      id: parse
+      run: |
+        # Extract search term and ZIP from issue body
+        ISSUE_BODY='${{ github.event.issue.body }}'
+        
+        # Sanitize: only allow alphanumeric, spaces, hyphens, and basic punctuation
+        # Remove any potentially dangerous characters
+        SEARCH_TERM=$(echo "$ISSUE_BODY" | grep -oP 'Search Term: \K[^\n]+' | head -1 | tr -dc 'a-zA-Z0-9\s\-\_\(\)\[\]\.\,' | head -c 100)
+        ZIP_CODE=$(echo "$ISSUE_BODY" | grep -oP 'ZIP Code: \K[0-9]+' | head -1 | tr -dc '0-9' | head -c 5)
+        
+        # Validate ZIP code (must be 5 digits)
+        if ! [[ "$ZIP_CODE" =~ ^[0-9]{5}$ ]]; then
+          echo "Invalid ZIP code format"
+          exit 1
+        fi
+        
+        # Validate search term (must not be empty, max 100 chars)
+        if [[ -z "$SEARCH_TERM" ]] || [[ ${#SEARCH_TERM} -lt 2 ]]; then
+          echo "Invalid search term"
+          exit 1
+        fi
+        
+        # Additional safety: check for suspicious patterns
+        if echo "$SEARCH_TERM" | grep -qiE '(script|javascript|onerror|onload|<|>|\"|\"|\`;|\${)'; then
+          echo "Potentially malicious input detected"
+          exit 1
+        fi
+        
+        echo "search_term=$SEARCH_TERM" >> $GITHUB_OUTPUT
+        echo "zip_code=$ZIP_CODE" >> $GITHUB_OUTPUT
+        echo "Validated search: '$SEARCH_TERM' in ZIP $ZIP_CODE"
+        
+    - name: Run scraper
+      env:
+        SEARCH_TERM: ${{ steps.parse.outputs.search_term }}
+        ZIP_CODE: ${{ steps.parse.outputs.zip_code }}
+      run: |
+        cd gear-hunt
+        # Scraper will read env vars and update gear.json
+        node scrape.js "$SEARCH_TERM" "$ZIP_CODE"
+        
+    - name: Commit and push results
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add gear-hunt/gear.json gear-hunt/images/
+        git diff --staged --quiet || git commit -m "Update gear listings: ${{ steps.parse.outputs.search_term }}"
+        git push
+        
+    - name: Close issue with success message
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `✅ Search complete! Results for "${{ steps.parse.outputs.search_term }}" in ZIP ${{ steps.parse.outputs.zip_code }} have been saved. View them at: https://${{ github.repository_owner }}.github.io/gear-hunt/`
+          });
+          github.rest.issues.update({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'closed'
+          });

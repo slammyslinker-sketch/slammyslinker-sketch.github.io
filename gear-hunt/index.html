@@ -375,60 +375,65 @@
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const searchTerm = document.getElementById('searchTerm').value;
-            const zipCode = document.getElementById('zipCode').value;
+            const searchTerm = document.getElementById('searchTerm').value.trim();
+            const zipCode = document.getElementById('zipCode').value.trim();
             const searchBtn = document.getElementById('searchBtn');
-            const container = document.getElementById('resultsContainer');
-            const countEl = document.getElementById('resultsCount');
             
-            // Show loading
-            searchBtn.disabled = true;
-            searchBtn.textContent = 'Searching...';
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Scouring the web for ${searchTerm}...</p>
-                </div>
-            `;
-            
-            // In a real implementation, this would trigger the scraper
-            // For now, load any existing cached results or show placeholder
-            try {
-                const response = await fetch('gear.json');
-                const data = await response.json();
-                
-                // Filter results based on search
-                const filtered = data.listings.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-                );
-                
-                if (filtered.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <div class="no-results-icon">😕</div>
-                            <h2>No results found</h2>
-                            <p>No cached results for "${searchTerm}". Run the scraper to search live sites.</p>
-                        </div>
-                    `;
-                    countEl.textContent = '0 results';
-                } else {
-                    displayResults(filtered);
-                    countEl.textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
-                }
-            } catch (error) {
-                container.innerHTML = `
-                    <div class="no-results">
-                        <div class="no-results-icon">🔧</div>
-                        <h2>No cached data</h2>
-                        <p>Run a search to populate the database.</p>
-                    </div>
-                `;
-                countEl.textContent = 'No data';
+            // Client-side validation (defense in depth)
+            if (!/^[0-9]{5}$/.test(zipCode)) {
+                alert('Please enter a valid 5-digit ZIP code');
+                return;
             }
             
+            if (searchTerm.length < 2 || searchTerm.length > 100) {
+                alert('Search term must be between 2 and 100 characters');
+                return;
+            }
+            
+            // Block suspicious input patterns
+            const suspicious = /[<>'"`;${}]/;
+            if (suspicious.test(searchTerm)) {
+                alert('Search term contains invalid characters');
+                return;
+            }
+            
+            // Show loading state
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Opening request...';
+            
+            // Build GitHub issue URL with pre-filled template
+            // This is secure: user must manually submit the issue, no tokens exposed
+            const repo = 'slammyslinker-sketch/slammyslinker-sketch.github.io';
+            const title = encodeURIComponent(`[Gear Search] ${searchTerm}`);
+            const body = encodeURIComponent(
+                `Search Term: ${searchTerm}\n` +
+                `ZIP Code: ${zipCode}\n\n` +
+                `---\n` +
+                `This search request will be processed by GitHub Actions. ` +
+                `Results will appear at: https://slammyslinker-sketch.github.io/gear-hunt/\n\n` +
+                `Click "Submit new issue" to start the search.`
+            );
+            const labels = encodeURIComponent('gear-search,automated');
+            
+            const issueUrl = `https://github.com/${repo}/issues/new?title=${title}&body=${body}&labels=${labels}`;
+            
+            // Open in new tab
+            window.open(issueUrl, '_blank');
+            
+            // Reset button
             searchBtn.disabled = false;
             searchBtn.textContent = 'Search Gear';
+            
+            // Show pending message
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">⏳</div>
+                    <h2>Search Request Created</h2>
+                    <p>Submit the GitHub issue to start the search.</p>
+                    <p style="margin-top: 15px; color: #666;">Results will appear here in ~2 minutes after the issue is submitted.</p>
+                    <a href="${issueUrl}" target="_blank" class="gear-link" style="margin-top: 20px; display: inline-block;">Open Issue →</a>
+                </div>
+            `;
         });
         
         function displayResults(listings) {
