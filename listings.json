@@ -146,12 +146,12 @@
       "beds": 3,
       "baths": 2,
       "sqft": 2136,
-      "status": "Contingent",
+      "status": "Pending",
       "url": "https://www.realtor.com/realestateandhomes-detail/2180-Lawrence-Rd_Clover_SC_29710_M62392-49331",
       "image": "images/2180-lawrence-rd-v2.jpg",
       "isNew": false,
       "hoa": null,
-      "notes": "Sqft perfect (2136), 2 baths. Large 5 acre lot. Contingent."
+      "notes": "Sqft perfect (2136), 2 baths. Large 5 acre lot. Now PENDING!"
     },
     {
       "id": "29710-002",
