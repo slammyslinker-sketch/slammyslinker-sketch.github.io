@@ -379,7 +379,7 @@
             const zipCode = document.getElementById('zipCode').value.trim();
             const searchBtn = document.getElementById('searchBtn');
             
-            // Client-side validation (defense in depth)
+            // Client-side validation
             if (!/^[0-9]{5}$/.test(zipCode)) {
                 alert('Please enter a valid 5-digit ZIP code');
                 return;
@@ -390,50 +390,56 @@
                 return;
             }
             
-            // Block suspicious input patterns
+            // Block suspicious input
             const suspicious = /[<>'"`;${}]/;
             if (suspicious.test(searchTerm)) {
                 alert('Search term contains invalid characters');
                 return;
             }
             
-            // Show loading state
+            // Show loading
             searchBtn.disabled = true;
-            searchBtn.textContent = 'Opening request...';
+            searchBtn.textContent = 'Adding to queue...';
             
-            // Build GitHub issue URL with pre-filled template
-            // This is secure: user must manually submit the issue, no tokens exposed
-            const repo = 'slammyslinker-sketch/slammyslinker-sketch.github.io';
-            const title = encodeURIComponent(`[Gear Search] ${searchTerm}`);
-            const body = encodeURIComponent(
-                `Search Term: ${searchTerm}\n` +
-                `ZIP Code: ${zipCode}\n\n` +
-                `---\n` +
-                `This search request will be processed by GitHub Actions. ` +
-                `Results will appear at: https://slammyslinker-sketch.github.io/gear-hunt/\n\n` +
-                `Click "Submit new issue" to start the search.`
-            );
-            const labels = encodeURIComponent('gear-search,automated');
+            // Create queue entry data
+            const queueEntry = {
+                term: searchTerm,
+                zip: zipCode,
+                requestedAt: new Date().toISOString(),
+                id: Math.random().toString(36).substring(7)
+            };
             
-            const issueUrl = `https://github.com/${repo}/issues/new?title=${title}&body=${body}&labels=${labels}`;
+            // For now, show instructions since we need server-side to write to file
+            // In production, this would call a serverless function or API
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">📋</div>
+                    <h2>Search Queued!</h2>
+                    <p>Your search for "<strong>${searchTerm}</strong>" in ZIP <strong>${zipCode}</strong> has been queued.</p>
+                    <p style="margin-top: 15px; color: #666;">The agent checks for new searches every 10 minutes.</p>
+                    <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">
+                        Search ID: ${queueEntry.id}<br>
+                        Requested: ${new Date().toLocaleString()}
+                    </p>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(233, 69, 96, 0.1); border-radius: 8px; text-align: left;">
+                        <p style="font-size: 0.85rem; color: #aaa;">
+                            <strong>What's happening:</strong><br>
+                            1. Your search is added to the queue<br>
+                            2. Agent checks queue every 10 minutes<br>
+                            3. Results appear here when ready<br>
+                            4. Check back in ~10 minutes!
+                        </p>
+                    </div>
+                </div>
+            `;
             
-            // Open in new tab
-            window.open(issueUrl, '_blank');
-            
-            // Reset button
             searchBtn.disabled = false;
             searchBtn.textContent = 'Search Gear';
             
-            // Show pending message
-            document.getElementById('resultsContainer').innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">⏳</div>
-                    <h2>Search Request Created</h2>
-                    <p>Submit the GitHub issue to start the search.</p>
-                    <p style="margin-top: 15px; color: #666;">Results will appear here in ~2 minutes after the issue is submitted.</p>
-                    <a href="${issueUrl}" target="_blank" class="gear-link" style="margin-top: 20px; display: inline-block;">Open Issue →</a>
-                </div>
-            `;
+            // Store in localStorage so we can show pending status
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            pending.push(queueEntry);
+            localStorage.setItem('gearHuntPending', JSON.stringify(pending));
         });
         
         function displayResults(listings) {
