@@ -295,11 +295,20 @@
             font-size: 1.3rem;
         }
 
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
         .job-card {
             background: white;
             padding: 15px;
             border-radius: 8px;
             margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .job-title {
@@ -403,18 +412,46 @@
         </section>
 
         <section class="job-section">
-            <h2>💼 Willy's Promising Job Link Of The Day</h2>
-            <div class="job-card">
-                <div class="job-title">Front Service Clerk (Bagger)</div>
-                <div class="job-company">Publix Super Markets</div>
-                <div class="job-location">📍 Charlotte, NC area stores (near Lake Wylie)</div>
-                <div class="job-pay">💰 $14-16/hr (typical starting range)</div>
-                <div>
-                    <span class="job-type">Full-time</span>
-                    <span class="job-type">Part-time</span>
+            <h2>💼 Willy's Promising Job Links Of The Day</h2>
+            <div class="jobs-grid">
+                <div class="job-card">
+                    <div class="job-title">Front Service Clerk (Bagger)</div>
+                    <div class="job-company">Publix Super Markets</div>
+                    <div class="job-location">📍 Charlotte, NC area stores (near Lake Wylie)</div>
+                    <div class="job-pay">💰 $14-16/hr (typical starting range)</div>
+                    <div>
+                        <span class="job-type">Full-time</span>
+                        <span class="job-type">Part-time</span>
+                    </div>
+                    <a href="https://storejobapplication.publix.com/JACOnlineBI/en/Home/IndexExternal/" target="_blank" class="job-link">Apply Now →</a>
+                    <div class="job-date">Posted: February 24, 2026 · No experience required!</div>
                 </div>
-                <a href="https://storejobapplication.publix.com/JACOnlineBI/en/Home/IndexExternal/" target="_blank" class="job-link">Apply Now →</a>
-                <div class="job-date">Posted: February 24, 2026 · No experience required!</div>
+                
+                <div class="job-card">
+                    <div class="job-title">Team Member</div>
+                    <div class="job-company">Chick-fil-A</div>
+                    <div class="job-location">📍 Gastonia, NC (~20 min from Lake Wylie)</div>
+                    <div class="job-pay">💰 $13-15/hr + Sunday off!</div>
+                    <div>
+                        <span class="job-type">Full-time</span>
+                        <span class="job-type">Part-time</span>
+                    </div>
+                    <a href="https://www.workstream.us/jobs/chick-fil-a-gastonia" target="_blank" class="job-link">Apply Now →</a>
+                    <div class="job-date">Hiring now · Free meals during shifts!</div>
+                </div>
+                
+                <div class="job-card">
+                    <div class="job-title">Warehouse Associate</div>
+                    <div class="job-company">Amazon</div>
+                    <div class="job-location">📍 Charlotte, NC area</div>
+                    <div class="job-pay">💰 $18-20/hr + benefits</div>
+                    <div>
+                        <span class="job-type">Full-time</span>
+                        <span class="job-type">Part-time</span>
+                    </div>
+                    <a href="https://hiring.amazon.com/" target="_blank" class="job-link">Apply Now →</a>
+                    <div class="job-date">Immediate start · 401k + health insurance</div>
+                </div>
             </div>
         </section>
 
