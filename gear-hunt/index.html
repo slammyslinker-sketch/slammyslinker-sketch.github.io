@@ -739,11 +739,126 @@
             localStorage.setItem('gearHuntCompleted', JSON.stringify(completed));
         }
         
-        // Update timers every second
-        setInterval(() => {
-            renderQueueCard();
-            animateProgress();
-        }, 1000);
+        // Load real queue status from server
+        async function loadQueueStatus() {
+            try {
+                const response = await fetch('search-queue.json?t=' + Date.now());
+                const queue = await response.json();
+                
+                // Merge server queue with local pending
+                const localPending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+                
+                // If server has a search that's processing, update our local status
+                if (queue.processing) {
+                    const localItem = localPending.find(p => p.id === queue.processing.id);
+                    if (localItem) {
+                        localItem.status = 'processing';
+                        localItem.progress = queue.currentProgress || 10;
+                    }
+                }
+                
+                // Check for completed searches
+                if (queue.completedSearches) {
+                    queue.completedSearches.forEach(completed => {
+                        const localIdx = localPending.findIndex(p => p.id === completed.id);
+                        if (localIdx >= 0) {
+                            localPending[localIdx].status = 'completed';
+                            // Remove after showing completion briefly
+                            setTimeout(() => {
+                                removeFromQueue(completed.id);
+                            }, 5000);
+                        }
+                    });
+                }
+                
+                localStorage.setItem('gearHuntPending', JSON.stringify(localPending));
+                renderQueueCard(queue);
+            } catch (e) {
+                // Server file might not exist yet
+                renderQueueCard(null);
+            }
+        }
+        
+        // Render queue with real progress
+        function renderQueueCard(serverQueue) {
+            const pending = JSON.parse(localStorage.getItem('gearHuntPending') || '[]');
+            const queueList = document.getElementById('queueList');
+            const queueCard = document.getElementById('queueCard');
+            
+            if (pending.length === 0 && (!serverQueue || !serverQueue.processing)) {
+                queueCard.style.display = 'none';
+                return;
+            }
+            
+            queueCard.style.display = 'block';
+            document.getElementById('queueCount').textContent = `(${pending.length}/3)`;
+            
+            // Check queue limit
+            const queueLimit = document.getElementById('queueLimit');
+            if (pending.length >= 3) {
+                queueLimit.classList.add('at-max');
+                queueLimit.textContent = 'Queue is full - wait for a search to complete';
+            } else {
+                queueLimit.classList.remove('at-max');
+                queueLimit.textContent = `${3 - pending.length} slot${3 - pending.length !== 1 ? 's' : ''} remaining`;
+            }
+            
+            queueList.innerHTML = pending.map((item) => {
+                const isProcessing = item.status === 'processing' || 
+                    (serverQueue?.processing?.id === item.id);
+                const isCompleted = item.status === 'completed';
+                
+                let statusHtml = '';
+                let progressPercent = 0;
+                
+                if (isCompleted) {
+                    statusHtml = `
+                        <div class="queue-timer">✅ Search complete - results below!</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%; background: #2196f3;"></div>
+                        </div>
+                    `;
+                } else if (isProcessing) {
+                    // Real progress from server
+                    const realProgress = serverQueue?.currentProgress || item.progress || 10;
+                    const statusMsg = serverQueue?.statusMessage || 'Processing...';
+                    statusHtml = `
+                        <div class="queue-timer">🔄 ${statusMsg}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill processing" style="width: ${realProgress}%"></div>
+                        </div>
+                    `;
+                    progressPercent = realProgress;
+                } else {
+                    // Queued - show position
+                    const position = pending.indexOf(item) + 1;
+                    const waitTime = position * 10; // 10 min per search
+                    statusHtml = `
+                        <div class="queue-timer">📋 Queued (position #${position}) ~${waitTime} min wait</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 5%"></div>
+                        </div>
+                    `;
+                }
+                
+                const statusClass = isProcessing ? 'processing' : (isCompleted ? 'completed' : '');
+                const statusLabel = isProcessing ? 'Processing' : (isCompleted ? 'Done' : 'Queued');
+                
+                return `
+                    <div class="queue-item ${statusClass}">
+                        <div class="queue-header">
+                            <span class="queue-term">${item.term} (${item.zip})</span>
+                            <span class="queue-status ${statusClass}">${statusLabel}</span>
+                        </div>
+                        ${statusHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Poll for updates every 10 seconds
+        setInterval(loadQueueStatus, 10000);
+        loadQueueStatus(); // Initial load
         
         function displayResults(listings) {
             const container = document.getElementById('resultsContainer');
