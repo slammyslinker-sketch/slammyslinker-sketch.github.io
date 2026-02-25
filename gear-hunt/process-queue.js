@@ -12,7 +12,7 @@ const { execSync } = require('child_process');
 // SECURITY: Input validation and sanitization
 const SECURITY = {
   // Maximum input lengths
-  MAX_SEARCH_LENGTH: 100,
+  MAX_SEARCH_LENGTH: 55,
   MAX_ZIP_LENGTH: 5,
   
   // Blocked patterns for prompt injection prevention
