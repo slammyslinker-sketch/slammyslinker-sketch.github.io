@@ -117,28 +117,58 @@
             transform: none;
         }
 
-        .sources-bar {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .sources-section {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .sources-section h4 {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sources-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .source-tag {
-            padding: 6px 14px;
+            padding: 8px 16px;
             background: rgba(233, 69, 96, 0.2);
             color: #e94560;
             border-radius: 20px;
             font-size: 0.85rem;
-            border: 1px solid rgba(233, 69, 96, 0.3);
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .source-tag:hover {
+            background: rgba(233, 69, 96, 0.3);
+            transform: translateY(-1px);
         }
 
         .source-tag.inactive {
             background: rgba(100, 100, 100, 0.2);
             color: #888;
             border-color: rgba(100, 100, 100, 0.3);
+        }
+
+        .source-tag.inactive:hover {
+            background: rgba(100, 100, 100, 0.3);
+        }
+
+        .source-tag .check {
+            font-size: 0.9rem;
         }
 
         .results-header {
@@ -474,12 +504,15 @@
                 </div>
                 <button type="submit" class="search-btn" id="searchBtn">Search Gear</button>
             </form>
-            <div class="sources-bar">
-                <span class="source-tag">Reverb</span>
-                <span class="source-tag">eBay</span>
-                <span class="source-tag">MusicGoRound</span>
-                <span class="source-tag">Guitar Center Used</span>
-                <span class="source-tag">Craigslist</span>
+            <div class="sources-section">
+                <h4>Select Sources to Search:</h4>
+                <div class="sources-bar" id="sourcesBar">
+                    <span class="source-tag" data-source="reverb"><span class="check">✓</span> Reverb</span>
+                    <span class="source-tag" data-source="ebay"><span class="check">✓</span> eBay</span>
+                    <span class="source-tag" data-source="craigslist"><span class="check">✓</span> Craigslist</span>
+                    <span class="source-tag inactive" data-source="musicgoround"><span class="check"></span> MusicGoRound</span>
+                    <span class="source-tag inactive" data-source="guitarcenter"><span class="check"></span> Guitar Center</span>
+                </div>
             </div>
         </section>
 
@@ -554,14 +587,16 @@
                 return;
             }
             
-            // Create queue entry
+            // Create queue entry with selected sources
+            const selectedSources = getSelectedSources();
             const queueEntry = {
                 term: searchTerm,
                 zip: zipCode,
                 requestedAt: new Date().toISOString(),
                 id: Math.random().toString(36).substring(7),
                 status: 'queued',
-                position: pending.length + 1
+                position: pending.length + 1,
+                sources: selectedSources
             };
             
             // Add to queue
@@ -684,12 +719,19 @@
                 const statusClass = item.status === 'processing' ? 'processing' : (item.status === 'completed' ? 'completed' : '');
                 const statusLabel = item.status === 'processing' ? 'Processing' : (item.status === 'completed' ? 'Done' : 'Queued');
                 
+                // Show which sources are enabled
+                const sourcesList = item.sources ? Object.entries(item.sources)
+                    .filter(([k, v]) => v)
+                    .map(([k]) => k.charAt(0).toUpperCase() + k.slice(1))
+                    .join(', ') : 'All sources';
+                
                 return `
                     <div class="queue-item ${statusClass}">
                         <div class="queue-header">
                             <span class="queue-term">${item.term} (${item.zip})</span>
                             <span class="queue-status ${statusClass}">${statusLabel}</span>
                         </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Sources: ${sourcesList}</div>
                         ${statusHtml}
                     </div>
                 `;
@@ -922,6 +964,58 @@
         // Initialize
         loadCachedResults();
         updateQueueDisplay();
+        
+        // Source toggle functionality
+        function getSelectedSources() {
+            const sources = {};
+            document.querySelectorAll('.source-tag').forEach(tag => {
+                const source = tag.dataset.source;
+                sources[source] = !tag.classList.contains('inactive');
+            });
+            return sources;
+        }
+        
+        function saveSourcePreferences() {
+            const prefs = getSelectedSources();
+            localStorage.setItem('gearHuntSources', JSON.stringify(prefs));
+        }
+        
+        function loadSourcePreferences() {
+            const saved = localStorage.getItem('gearHuntSources');
+            if (saved) {
+                const prefs = JSON.parse(saved);
+                document.querySelectorAll('.source-tag').forEach(tag => {
+                    const source = tag.dataset.source;
+                    const isActive = prefs[source];
+                    const check = tag.querySelector('.check');
+                    if (isActive) {
+                        tag.classList.remove('inactive');
+                        check.textContent = '✓';
+                    } else {
+                        tag.classList.add('inactive');
+                        check.textContent = '';
+                    }
+                });
+            }
+        }
+        
+        // Add click handlers to source tags
+        document.querySelectorAll('.source-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const check = tag.querySelector('.check');
+                if (tag.classList.contains('inactive')) {
+                    tag.classList.remove('inactive');
+                    check.textContent = '✓';
+                } else {
+                    tag.classList.add('inactive');
+                    check.textContent = '';
+                }
+                saveSourcePreferences();
+            });
+        });
+        
+        // Load saved preferences on page load
+        loadSourcePreferences();
         renderQueueCard();
     </script>
 </body>

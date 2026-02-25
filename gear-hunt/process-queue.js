@@ -471,12 +471,19 @@ async function processSearch(browser, search) {
   
   try {
     const allListings = [];
+    const sources = search.sources || { reverb: true, ebay: true, craigslist: true, musicgoround: false, guitarcenter: false };
     
     onProgress(5, 'Starting search...');
     
-    allListings.push(...await scrapeReverb(browser, search.term, onProgress));
-    allListings.push(...await scrapeEbay(browser, search.term, search.zip, onProgress));
-    allListings.push(...await scrapeCraigslist(browser, search.term, search.zip, onProgress));
+    if (sources.reverb !== false) {
+      allListings.push(...await scrapeReverb(browser, search.term, onProgress));
+    }
+    if (sources.ebay !== false) {
+      allListings.push(...await scrapeEbay(browser, search.term, search.zip, onProgress));
+    }
+    if (sources.craigslist !== false) {
+      allListings.push(...await scrapeCraigslist(browser, search.term, search.zip, onProgress));
+    }
     
     onProgress(90, 'Finding best prices...');
     const top3 = getTop3Cheapest(allListings);
