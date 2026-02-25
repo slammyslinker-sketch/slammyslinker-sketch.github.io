@@ -1,0 +1,16 @@
+{
+  "name": "gear-hunt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "process-queue.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
