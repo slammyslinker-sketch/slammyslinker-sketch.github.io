@@ -241,7 +241,8 @@ async function processQueue() {
   // Push to GitHub
   if (result.success) {
     console.log('📤 Pushing to GitHub...');
-    const pushed = gitPush(`Gear Hunt: Results for "${search.term}" (${result.count} listings)`);
+    const safeTerm = search.term.replace(/"/g, '');
+    const pushed = gitPush(`Gear Hunt: Results for ${safeTerm} (${result.count} listings)`);
     if (pushed) {
       console.log('✅ Pushed successfully');
     }
