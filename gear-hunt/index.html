@@ -983,39 +983,56 @@
         function loadSourcePreferences() {
             const saved = localStorage.getItem('gearHuntSources');
             if (saved) {
-                const prefs = JSON.parse(saved);
-                document.querySelectorAll('.source-tag').forEach(tag => {
-                    const source = tag.dataset.source;
-                    const isActive = prefs[source];
-                    const check = tag.querySelector('.check');
-                    if (isActive) {
-                        tag.classList.remove('inactive');
-                        check.textContent = '✓';
-                    } else {
-                        tag.classList.add('inactive');
-                        check.textContent = '';
-                    }
-                });
+                try {
+                    const prefs = JSON.parse(saved);
+                    document.querySelectorAll('.source-tag').forEach(tag => {
+                        const source = tag.dataset.source;
+                        const isActive = prefs[source];
+                        const check = tag.querySelector('.check');
+                        if (isActive) {
+                            tag.classList.remove('inactive');
+                            if (check) check.textContent = '✓';
+                        } else {
+                            tag.classList.add('inactive');
+                            if (check) check.textContent = '';
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error loading preferences:', e);
+                }
             }
         }
         
         // Add click handlers to source tags
-        document.querySelectorAll('.source-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const check = tag.querySelector('.check');
-                if (tag.classList.contains('inactive')) {
-                    tag.classList.remove('inactive');
-                    check.textContent = '✓';
-                } else {
-                    tag.classList.add('inactive');
-                    check.textContent = '';
-                }
-                saveSourcePreferences();
+        function initSourceToggles() {
+            document.querySelectorAll('.source-tag').forEach(tag => {
+                tag.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const check = tag.querySelector('.check');
+                    if (tag.classList.contains('inactive')) {
+                        tag.classList.remove('inactive');
+                        if (check) check.textContent = '✓';
+                    } else {
+                        tag.classList.add('inactive');
+                        if (check) check.textContent = '';
+                    }
+                    saveSourcePreferences();
+                });
             });
-        });
+        }
         
-        // Load saved preferences on page load
-        loadSourcePreferences();
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                initSourceToggles();
+                loadSourcePreferences();
+            });
+        } else {
+            initSourceToggles();
+            loadSourcePreferences();
+        }
         renderQueueCard();
     </script>
 </body>
