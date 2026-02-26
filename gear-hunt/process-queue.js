@@ -139,6 +139,7 @@ async function initBrowser() {
   
   return puppeteerExtra.launch({
     headless: 'new',
+    executablePath: '/usr/bin/chromium',
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -168,7 +169,7 @@ async function scrapeReverb(browser, searchTerm, onProgress) {
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
     
     onProgress(25, 'Waiting for results...');
-    await page.waitForTimeout(2000);
+    await new Promise(r => setTimeout(r, 2000));
     
     // Accept cookies if present
     try {
