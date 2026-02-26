@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-02-24T20:00:00.000Z",
-  "lastChecked": "2026-02-26T20:48:22.232Z",
+  "lastUpdated": "2026-02-26T20:55:00.000Z",
+  "lastChecked": "2026-02-26T20:55:00.000Z",
   "searchCriteria": {
     "zips": [
       "29710",
@@ -17,6 +17,40 @@
     "sqftMax": 2200
   },
   "listings": [
+    {
+      "id": "29710-005",
+      "address": "760 Bellegray Rd",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$374,900",
+      "beds": 4,
+      "baths": 3,
+      "sqft": 0,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/760-Bellegray-Rd_Clover_SC_29710_M54156-81631",
+      "image": null,
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW! 4bed/3bath on 1.6 acre lot. Price in range, baths perfect! Tour available."
+    },
+    {
+      "id": "29710-006",
+      "address": "625 Cassidy Ct",
+      "city": "Clover",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$349,990",
+      "beds": 3,
+      "baths": 2.5,
+      "sqft": 1771,
+      "status": "Townhouse",
+      "url": "https://www.realtor.com/realestateandhomes-detail/625-Cassidy-Ct_Clover_SC_29710_M99754-21130",
+      "image": null,
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW! New construction townhouse by Mattamy Homes. 3bed/2.5bath, 1,771 sqft. 3D tour available."
+    },
     {
       "id": "29720-002",
       "address": "3236 Daystar Rd",
