@@ -136,7 +136,70 @@ browser({
 - URLs often end in `.webp` but you can download as `.jpg`
 - Use the largest available size (URLs often have `w1280_h960` or similar)
 
-### Step 5: Update listings.json
+### Step 5: Extract HOA Information (CRITICAL)
+
+**⚠️ VITAL: Check for HOA fees on EVERY listing. This affects the true cost of the home.**
+
+While on the property detail page (from Step 4), extract HOA information:
+
+```javascript
+// Extract HOA information
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      // Check multiple possible locations for HOA data
+      let hoa = null;
+      
+      // Method 1: Look for HOA test IDs
+      const hoaElements = document.querySelectorAll('[data-testid*="hoa"], [data-testid*="association"]');
+      for (const el of hoaElements) {
+        const text = el.textContent;
+        if (text.includes('$') || text.includes('/mo') || text.includes('/month') || text.includes('monthly')) {
+          hoa = text.trim();
+          break;
+        }
+      }
+      
+      // Method 2: Check property details/facts sections
+      if (!hoa) {
+        const detailsSections = document.querySelectorAll('[data-testid="property-details"], .property-details, [data-testid="property-facts"], .facts-container');
+        for (const section of detailsSections) {
+          const text = section.textContent;
+          const hoaMatch = text.match(/HOA[\s\/\-]*(?:fee|dues)?[:\s]*\$?([\d,]+(?:\.\d{2})?)\s*(?:\/|\s*per\s*)?\s*(mo|month|monthly|yr|year|annual)?/i);
+          if (hoaMatch) {
+            const amount = hoaMatch[1];
+            const period = hoaMatch[2] || 'mo';
+            hoa = '$' + amount + '/' + period;
+            break;
+          }
+        }
+      }
+      
+      // Method 3: Look for "Association" or "HOA" in any text
+      if (!hoa) {
+        const allText = document.body.innerText;
+        const hoaRegex = /(?:HOA|Homeowners?\s*Association|Association)\s*(?:fee|dues)?[:\s]*\$?([\d,]+)/i;
+        const match = allText.match(hoaRegex);
+        if (match) {
+          hoa = '$' + match[1] + '/mo';
+        }
+      }
+      
+      return hoa; // Returns null if no HOA found, or string like "$150/mo"
+    `
+  }
+})
+```
+
+**HOA Data to Record:**
+- If HOA exists: Store the fee amount (e.g., "$150/mo", "$500/year")
+- If no HOA: Set `hoa: null` in listings.json
+
+**⚠️ DO NOT SKIP THIS STEP** — Even if you think a property doesn't have an HOA, verify by checking the page.
+
+### Step 6: Update listings.json
 
 Structure for each listing:
 ```json
@@ -150,11 +213,19 @@ Structure for each listing:
   "image": "https://ap.rdcpix.com/.../image.jpg",
   "url": "https://www.realtor.com/realestateandhomes-detail/...",
   "isNew": true,
+  "hoa": "$150/mo",
   "notes": "Brief description or status"
 }
 ```
 
-**Important:**
+**⚠️ CRITICAL - HOA Field:**
+- **ALWAYS** check for HOA fees during extraction (Step 5)
+- If HOA exists: Record the fee (e.g., `"hoa": "$150/mo"` or `"hoa": "$1,800/year"`)
+- If NO HOA: Set `"hoa": null` (not undefined, not empty string)
+- The site displays HOA fees prominently in red on listing cards
+- The site counts and displays how many homes have HOAs
+
+**Other Important Fields:**
 - Set `isNew: true` for all newly added listings
 - Set `isNew: false` for older listings that were previously marked new
 - Update the `lastUpdated` timestamp at the top of the file
@@ -275,7 +346,7 @@ browser({ action: "screenshot", fullPage: true })
    ```
 5. Report failure to main session if unable to resolve
 
-### Step 10: Verify All Listings Display (CRITICAL)
+### Step 10: Verify All Listings Display and HOA Data (CRITICAL)
 
 **Just because listings.json updated doesn't mean they appear on the site!**
 
@@ -288,6 +359,47 @@ const data = await response.json();
 
 console.log(`Total listings in JSON: ${data.listings.length}`);
 // Should be 17 (or whatever your count is)
+```
+
+**Verify HOA data is correct:**
+```javascript
+// Check HOA counts
+const listingsWithHOA = data.listings.filter(l => l.hoa !== null);
+console.log(`Listings with HOA: ${listingsWithHOA.length}`);
+listingsWithHOA.forEach(l => {
+  console.log(`- ${l.address}: ${l.hoa}`);
+});
+
+// Verify HOA displays correctly on site
+browser({
+  action: "open",
+  profile: "chrome",
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Check HOA count banner
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const hoaBanner = document.getElementById('hoaCount');
+      hoaBanner ? hoaBanner.textContent : 'HOA banner not found'
+    `
+  }
+})
+
+// Check that listing cards show HOA fees
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const hoaCards = document.querySelectorAll('.listing-hoa');
+      return Array.from(hoaCards).map(card => card.textContent);
+    `
+  }
+})
 ```
 
 **Visual verification:**
@@ -324,6 +436,13 @@ browser({
      task: "Fix index.html to display all listings from listings.json..."
    })
    ```
+
+**If HOA data is missing or incorrect:**
+1. Re-check the property detail page on Realtor.com for HOA info
+2. Update listings.json with correct `hoa` field
+3. Verify the site displays HOA fees (red text on listing cards)
+4. Verify the HOA count banner shows correct number
+5. If extraction missed HOA data, improve the extraction regex/pattern
 
 ## Troubleshooting
 
@@ -366,6 +485,38 @@ browser({
 ### Image Download Issues
 - Some images may require the `Referer` header set to `https://www.realtor.com/`
 - Use `curl -L -H "Referer: https://www.realtor.com/" ...`
+
+### HOA Data Missing or Incorrect (CRITICAL)
+**Problem:** Listing has HOA fees on Realtor.com but not in listings.json, or HOA not displaying on site.
+
+**Causes:**
+1. Extraction script didn't check for HOA
+2. HOA information in different location on page
+3. HOA listed as "Association Fee" or similar, not "HOA"
+4. Data not saved to listings.json correctly
+
+**Solutions:**
+1. **Re-extract with better selectors:**
+   - Look for "Association", "Community", "HOA" in page text
+   - Check property facts/details sections thoroughly
+   - Try multiple regex patterns: `/\$[\d,]+\s*\/(?:mo|month)/i`
+
+2. **Verify data in listings.json:**
+   ```bash
+   cat listings.json | grep -A5 -B5 '"hoa"'
+   ```
+   Should show `null` or a fee like `"$150/mo"`
+
+3. **Check site displays correctly:**
+   - Red "HOA" label should appear on card if `hoa` field is not null
+   - HOA fee should show below the red label
+   - Banner at top should count homes with HOA
+
+**Prevention:**
+- ALWAYS run HOA extraction code (Step 5)
+- NEVER skip HOA check even if you think there's no HOA
+- Verify by checking the actual property detail page
+- If HOA found, record the full fee string with period (e.g., "$150/mo", "$1,800/year")
 
 ### Git Push Failures
 - Check authentication is configured
