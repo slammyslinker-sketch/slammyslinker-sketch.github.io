@@ -411,7 +411,7 @@
                 </div>
             </div>
             <div class="last-updated">Last updated: <span id="lastUpdated">Loading...</span></div>
-            <div class="next-update" id="nextUpdate">Check back at...</div>
+            <div class="next-update" id="nextUpdate">Will update soon</div>
             <div class="hoa-count" id="hoaCount">Checking HOA status...</div>
         </section>
 
@@ -487,10 +487,7 @@
                     }
                 }
                 
-                const nextTimeStr = nextUpdate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                const nextDateStr = nextUpdate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                const datePrefix = nextUpdate.toDateString() !== now.toDateString() ? `${nextDateStr} at ` : '';
-                document.getElementById('nextUpdate').textContent = `Check back ${datePrefix}${nextTimeStr}`;
+                document.getElementById('nextUpdate').textContent = `Will update soon`
                 
                 // Count homes with HOA
                 const hoaCount = data.listings.filter(l => l.hoa).length;
