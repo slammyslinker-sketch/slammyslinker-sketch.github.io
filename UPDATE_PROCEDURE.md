@@ -170,8 +170,28 @@ file willy-site/images/property-id.jpg
 # Should output: "JPEG image data, ..."
 ```
 
-### Step 7: Update index.html (if template changes needed)
+### Step 7: Update index.html to Display All Listings
 
+**⚠️ IMPORTANT:** After updating `listings.json`, you MUST verify that `index.html` displays all listings.
+
+The JavaScript in index.html loads listings dynamically from `listings.json`. After adding new listings:
+
+1. **Check that index.html loads from listings.json correctly**
+   - Look for the `loadListings()` function
+   - Ensure it fetches `listings.json` (not hardcoded data)
+   - Verify there's no limit/filter preventing display
+
+2. **If listings don't appear after push:**
+   - Browser cache may be holding old JS
+   - Try cache-busting: add `?v=2` to the page URL
+   - Or hard-refresh: Ctrl+Shift+R (or Cmd+Shift+R on Mac)
+
+3. **If still not showing all listings:**
+   - Check browser console for JavaScript errors
+   - Verify `listings.json` is valid JSON (no syntax errors)
+   - Ensure fetch URL is correct: `listings.json` (relative path)
+
+**If you need to update index.html template:**
 The site uses a card-based layout. Each listing generates a card with:
 - Image (top)
 - Price (prominent)
@@ -243,7 +263,67 @@ browser({ action: "screenshot", fullPage: true })
 1. Try force-pushing an amended commit: `git commit --amend --no-edit && git push --force`
 2. Check GitHub Pages settings for build errors
 3. Manually verify at https://slammyslinker-sketch.github.io/listings.json
-4. Report failure to main session if unable to resolve
+4. **If still not working — SPAWN DIAGNOSTIC SUBAGENT:**
+   ```javascript
+   sessions_spawn({
+     label: "diagnose-github-pages-issue",
+     mode: "run",
+     runTimeoutSeconds: 600,
+     task: "Diagnose why GitHub Pages site is not reflecting updates...",
+     thinking: "high"  // ← High thinking for complex diagnosis
+   })
+   ```
+5. Report failure to main session if unable to resolve
+
+### Step 10: Verify All Listings Display (CRITICAL)
+
+**Just because listings.json updated doesn't mean they appear on the site!**
+
+**Verify count matches:**
+```javascript
+// Check that all listings appear on the live site
+const fetch = require('node-fetch');
+const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
+const data = await response.json();
+
+console.log(`Total listings in JSON: ${data.listings.length}`);
+// Should be 17 (or whatever your count is)
+```
+
+**Visual verification:**
+```javascript
+// Open site and count visible listing cards
+browser({
+  action: "open",
+  profile: "chrome",
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Get count of listing cards
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `document.querySelectorAll('.listing-card').length`
+  }
+})
+
+// Should match data.listings.length
+```
+
+**If count doesn't match:**
+1. Check browser console for JS errors
+2. Verify index.html loads listings.json correctly
+3. Try cache-busting with `?v=2` query param
+4. If needed, spawn subagent to fix index.html:
+   ```javascript
+   sessions_spawn({
+     label: "fix-index-html-display",
+     mode: "run",
+     runTimeoutSeconds: 600,
+     task: "Fix index.html to display all listings from listings.json..."
+   })
+   ```
 
 ## Troubleshooting
 
