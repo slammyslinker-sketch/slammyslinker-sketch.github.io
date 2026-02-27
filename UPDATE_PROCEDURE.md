@@ -8,15 +8,26 @@ This document outlines the complete procedure for updating the Willy's Adventure
 
 ## Prerequisites
 
-1. **OpenClaw Browser Relay Active**
-   - Chrome extension must be installed and enabled
-   - Navigate to Realtor.com in Chrome
-   - Click the OpenClaw extension icon (badge should show "ON")
-   - This is **critical** — Kasada bot protection blocks all headless browsers (Playwright, Puppeteer, Selenium)
+### 1. OpenClaw Browser Relay Active (CRITICAL)
 
-2. **GitHub Access**
-   - Repo: `slammyslinker-sketch/slammyslinker-sketch.github.io`
-   - Ensure push access is configured
+**⚠️ WARNING: The subagent MUST use the existing Chrome instance. Do NOT let it open a new browser instance — the extension won't work there!**
+
+**Before spawning the subagent:**
+1. Open **Google Chrome** (the existing instance you use daily)
+2. Navigate to Realtor.com in a tab
+3. Click the **OpenClaw extension icon** (badge should show "ON")
+4. **Keep this Chrome window open** — the subagent will connect to it
+
+**When the subagent runs:**
+- It MUST use `profile="chrome"` — this connects to your existing Chrome
+- It MUST create a **new tab** in the existing browser, not open a new browser instance
+- Kasada bot protection blocks all headless browsers (Playwright, Puppeteer, Selenium)
+
+**If the subagent tries to open a new Chromium instance, STOP IT.** The relay extension only works in the existing Chrome instance where it's been manually attached.
+
+### 2. GitHub Access
+- Repo: `slammyslinker-sketch/slammyslinker-sketch.github.io`
+- Ensure push access is configured
 
 ## Update Procedure
 
@@ -41,16 +52,19 @@ sessions_spawn({
 
 ### Step 3: Extract New Listings via Browser Relay
 
-**Critical:** Use `profile="chrome"` — do NOT use Playwright/Puppeteer
+**⚠️ CRITICAL: Use the EXISTING Chrome instance — do NOT open a new browser**
 
+**Correct approach:**
 ```javascript
-// Navigate to search page
+// Open a NEW TAB in the existing Chrome instance
+// profile="chrome" connects to the relay-attached browser
 browser({
   action: "open",
-  profile: "chrome",
+  profile: "chrome",  // ← CRITICAL: Uses existing Chrome, not new browser
   targetUrl: "https://www.realtor.com/realestateandhomes-search/29710"
 })
 
+// The subagent now has control of a new tab in your existing Chrome
 // Wait for listings to load
 browser({
   action: "act",
@@ -78,6 +92,15 @@ browser({
       return listings;
     `
   }
+})
+```
+
+**WRONG approach (DO NOT DO THIS):**
+```javascript
+// ❌ This opens a NEW browser instance - extension won't work!
+browser({
+  action: "open",
+  targetUrl: "..."  // No profile specified = new Chromium instance
 })
 ```
 
@@ -113,7 +136,70 @@ browser({
 - URLs often end in `.webp` but you can download as `.jpg`
 - Use the largest available size (URLs often have `w1280_h960` or similar)
 
-### Step 5: Update listings.json
+### Step 5: Extract HOA Information (CRITICAL)
+
+**⚠️ VITAL: Check for HOA fees on EVERY listing. This affects the true cost of the home.**
+
+While on the property detail page (from Step 4), extract HOA information:
+
+```javascript
+// Extract HOA information
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      // Check multiple possible locations for HOA data
+      let hoa = null;
+      
+      // Method 1: Look for HOA test IDs
+      const hoaElements = document.querySelectorAll('[data-testid*="hoa"], [data-testid*="association"]');
+      for (const el of hoaElements) {
+        const text = el.textContent;
+        if (text.includes('$') || text.includes('/mo') || text.includes('/month') || text.includes('monthly')) {
+          hoa = text.trim();
+          break;
+        }
+      }
+      
+      // Method 2: Check property details/facts sections
+      if (!hoa) {
+        const detailsSections = document.querySelectorAll('[data-testid="property-details"], .property-details, [data-testid="property-facts"], .facts-container');
+        for (const section of detailsSections) {
+          const text = section.textContent;
+          const hoaMatch = text.match(/HOA[\s\/\-]*(?:fee|dues)?[:\s]*\$?([\d,]+(?:\.\d{2})?)\s*(?:\/|\s*per\s*)?\s*(mo|month|monthly|yr|year|annual)?/i);
+          if (hoaMatch) {
+            const amount = hoaMatch[1];
+            const period = hoaMatch[2] || 'mo';
+            hoa = '$' + amount + '/' + period;
+            break;
+          }
+        }
+      }
+      
+      // Method 3: Look for "Association" or "HOA" in any text
+      if (!hoa) {
+        const allText = document.body.innerText;
+        const hoaRegex = /(?:HOA|Homeowners?\s*Association|Association)\s*(?:fee|dues)?[:\s]*\$?([\d,]+)/i;
+        const match = allText.match(hoaRegex);
+        if (match) {
+          hoa = '$' + match[1] + '/mo';
+        }
+      }
+      
+      return hoa; // Returns null if no HOA found, or string like "$150/mo"
+    `
+  }
+})
+```
+
+**HOA Data to Record:**
+- If HOA exists: Store the fee amount (e.g., "$150/mo", "$500/year")
+- If no HOA: Set `hoa: null` in listings.json
+
+**⚠️ DO NOT SKIP THIS STEP** — Even if you think a property doesn't have an HOA, verify by checking the page.
+
+### Step 6: Update listings.json
 
 Structure for each listing:
 ```json
@@ -127,11 +213,19 @@ Structure for each listing:
   "image": "https://ap.rdcpix.com/.../image.jpg",
   "url": "https://www.realtor.com/realestateandhomes-detail/...",
   "isNew": true,
+  "hoa": "$150/mo",
   "notes": "Brief description or status"
 }
 ```
 
-**Important:**
+**⚠️ CRITICAL - HOA Field:**
+- **ALWAYS** check for HOA fees during extraction (Step 5)
+- If HOA exists: Record the fee (e.g., `"hoa": "$150/mo"` or `"hoa": "$1,800/year"`)
+- If NO HOA: Set `"hoa": null` (not undefined, not empty string)
+- The site displays HOA fees prominently in red on listing cards
+- The site counts and displays how many homes have HOAs
+
+**Other Important Fields:**
 - Set `isNew: true` for all newly added listings
 - Set `isNew: false` for older listings that were previously marked new
 - Update the `lastUpdated` timestamp at the top of the file
@@ -147,8 +241,28 @@ file willy-site/images/property-id.jpg
 # Should output: "JPEG image data, ..."
 ```
 
-### Step 7: Update index.html (if template changes needed)
+### Step 7: Update index.html to Display All Listings
 
+**⚠️ IMPORTANT:** After updating `listings.json`, you MUST verify that `index.html` displays all listings.
+
+The JavaScript in index.html loads listings dynamically from `listings.json`. After adding new listings:
+
+1. **Check that index.html loads from listings.json correctly**
+   - Look for the `loadListings()` function
+   - Ensure it fetches `listings.json` (not hardcoded data)
+   - Verify there's no limit/filter preventing display
+
+2. **If listings don't appear after push:**
+   - Browser cache may be holding old JS
+   - Try cache-busting: add `?v=2` to the page URL
+   - Or hard-refresh: Ctrl+Shift+R (or Cmd+Shift+R on Mac)
+
+3. **If still not showing all listings:**
+   - Check browser console for JavaScript errors
+   - Verify `listings.json` is valid JSON (no syntax errors)
+   - Ensure fetch URL is correct: `listings.json` (relative path)
+
+**If you need to update index.html template:**
 The site uses a card-based layout. Each listing generates a card with:
 - Image (top)
 - Price (prominent)
@@ -181,13 +295,14 @@ git push origin main
 
 **Must be performed by subagent to confirm deployment:**
 
+**Option A: HTTP Fetch (Recommended for verification)**
 ```javascript
 // Wait 30 seconds for GitHub Pages to start deploying
 await new Promise(r => setTimeout(r, 30000));
 
 // Fetch the live listings.json and verify timestamp
 const fetch = require('node-fetch');
-const response = await fetch('https://slammyslinker-sketch.github.io/listings.json');
+const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
 const data = await response.json();
 
 // Compare timestamps
@@ -201,13 +316,162 @@ if (data.lastUpdated === expectedTimestamp) {
 }
 ```
 
+**Option B: Visual Verification via Browser (Use existing Chrome!)**
+If you need to visually verify the site:
+```javascript
+// Open site in a NEW TAB in the existing Chrome instance
+browser({
+  action: "open",
+  profile: "chrome",  // ← CRITICAL: Use existing Chrome, not new browser
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Take screenshot to verify
+browser({ action: "screenshot", fullPage: true })
+```
+
 **If site doesn't update within 2 minutes:**
 1. Try force-pushing an amended commit: `git commit --amend --no-edit && git push --force`
 2. Check GitHub Pages settings for build errors
 3. Manually verify at https://slammyslinker-sketch.github.io/listings.json
-4. Report failure to main session if unable to resolve
+4. **If still not working — SPAWN DIAGNOSTIC SUBAGENT:**
+   ```javascript
+   sessions_spawn({
+     label: "diagnose-github-pages-issue",
+     mode: "run",
+     runTimeoutSeconds: 600,
+     task: "Diagnose why GitHub Pages site is not reflecting updates...",
+     thinking: "high"  // ← High thinking for complex diagnosis
+   })
+   ```
+5. Report failure to main session if unable to resolve
+
+### Step 10: Verify All Listings Display and HOA Data (CRITICAL)
+
+**Just because listings.json updated doesn't mean they appear on the site!**
+
+**Verify count matches:**
+```javascript
+// Check that all listings appear on the live site
+const fetch = require('node-fetch');
+const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
+const data = await response.json();
+
+console.log(`Total listings in JSON: ${data.listings.length}`);
+// Should be 17 (or whatever your count is)
+```
+
+**Verify HOA data is correct:**
+```javascript
+// Check HOA counts
+const listingsWithHOA = data.listings.filter(l => l.hoa !== null);
+console.log(`Listings with HOA: ${listingsWithHOA.length}`);
+listingsWithHOA.forEach(l => {
+  console.log(`- ${l.address}: ${l.hoa}`);
+});
+
+// Verify HOA displays correctly on site
+browser({
+  action: "open",
+  profile: "chrome",
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Check HOA count banner
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const hoaBanner = document.getElementById('hoaCount');
+      hoaBanner ? hoaBanner.textContent : 'HOA banner not found'
+    `
+  }
+})
+
+// Check that listing cards show HOA fees
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const hoaCards = document.querySelectorAll('.listing-hoa');
+      return Array.from(hoaCards).map(card => card.textContent);
+    `
+  }
+})
+```
+
+**Visual verification:**
+```javascript
+// Open site and count visible listing cards
+browser({
+  action: "open",
+  profile: "chrome",
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Get count of listing cards
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `document.querySelectorAll('.listing-card').length`
+  }
+})
+
+// Should match data.listings.length
+```
+
+**If count doesn't match:**
+1. Check browser console for JS errors
+2. Verify index.html loads listings.json correctly
+3. Try cache-busting with `?v=2` query param
+4. If needed, spawn subagent to fix index.html:
+   ```javascript
+   sessions_spawn({
+     label: "fix-index-html-display",
+     mode: "run",
+     runTimeoutSeconds: 600,
+     task: "Fix index.html to display all listings from listings.json..."
+   })
+   ```
+
+**If HOA data is missing or incorrect:**
+1. Re-check the property detail page on Realtor.com for HOA info
+2. Update listings.json with correct `hoa` field
+3. Verify the site displays HOA fees (red text on listing cards)
+4. Verify the HOA count banner shows correct number
+5. If extraction missed HOA data, improve the extraction regex/pattern
 
 ## Troubleshooting
+
+### Browser Opens New Instance (CRITICAL)
+**Problem:** Subagent tries to open a new Chromium browser instead of using existing Chrome.
+
+**Symptoms:**
+- New browser window opens
+- OpenClaw extension icon not present
+- Kasada blocks the request immediately
+
+**Solution:**
+1. **Kill the new browser instance immediately**
+2. **Ensure subagent uses `profile="chrome"`** in ALL browser calls:
+   ```javascript
+   browser({
+     action: "open",
+     profile: "chrome",  // ← REQUIRED
+     targetUrl: "..."
+   })
+   ```
+3. **Verify the existing Chrome has the relay attached:**
+   - Check extension badge shows "ON"
+   - If not, click the extension icon to attach
+
+**Prevention:**
+- ALWAYS include `profile: "chrome"` in browser calls
+- NEVER omit the profile parameter
+- The subagent should create a **new tab**, not a **new browser**
 
 ### Browser Relay Not Working
 - Ensure Chrome tab is active and Realtor.com is loaded
@@ -221,6 +485,38 @@ if (data.lastUpdated === expectedTimestamp) {
 ### Image Download Issues
 - Some images may require the `Referer` header set to `https://www.realtor.com/`
 - Use `curl -L -H "Referer: https://www.realtor.com/" ...`
+
+### HOA Data Missing or Incorrect (CRITICAL)
+**Problem:** Listing has HOA fees on Realtor.com but not in listings.json, or HOA not displaying on site.
+
+**Causes:**
+1. Extraction script didn't check for HOA
+2. HOA information in different location on page
+3. HOA listed as "Association Fee" or similar, not "HOA"
+4. Data not saved to listings.json correctly
+
+**Solutions:**
+1. **Re-extract with better selectors:**
+   - Look for "Association", "Community", "HOA" in page text
+   - Check property facts/details sections thoroughly
+   - Try multiple regex patterns: `/\$[\d,]+\s*\/(?:mo|month)/i`
+
+2. **Verify data in listings.json:**
+   ```bash
+   cat listings.json | grep -A5 -B5 '"hoa"'
+   ```
+   Should show `null` or a fee like `"$150/mo"`
+
+3. **Check site displays correctly:**
+   - Red "HOA" label should appear on card if `hoa` field is not null
+   - HOA fee should show below the red label
+   - Banner at top should count homes with HOA
+
+**Prevention:**
+- ALWAYS run HOA extraction code (Step 5)
+- NEVER skip HOA check even if you think there's no HOA
+- Verify by checking the actual property detail page
+- If HOA found, record the full fee string with period (e.g., "$150/mo", "$1,800/year")
 
 ### Git Push Failures
 - Check authentication is configured

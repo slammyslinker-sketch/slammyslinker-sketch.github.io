@@ -450,7 +450,9 @@
         // Load listings from JSON file
         async function loadListings() {
             try {
-                const response = await fetch('listings.json');
+                // Add cache-busting query param to force fresh fetch
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`listings.json?v=${cacheBuster}`);
                 const data = await response.json();
                 
                 // Use lastChecked if available, otherwise fall back to lastUpdated
