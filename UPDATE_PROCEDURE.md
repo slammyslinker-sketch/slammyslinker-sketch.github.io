@@ -8,15 +8,26 @@ This document outlines the complete procedure for updating the Willy's Adventure
 
 ## Prerequisites
 
-1. **OpenClaw Browser Relay Active**
-   - Chrome extension must be installed and enabled
-   - Navigate to Realtor.com in Chrome
-   - Click the OpenClaw extension icon (badge should show "ON")
-   - This is **critical** — Kasada bot protection blocks all headless browsers (Playwright, Puppeteer, Selenium)
+### 1. OpenClaw Browser Relay Active (CRITICAL)
 
-2. **GitHub Access**
-   - Repo: `slammyslinker-sketch/slammyslinker-sketch.github.io`
-   - Ensure push access is configured
+**⚠️ WARNING: The subagent MUST use the existing Chrome instance. Do NOT let it open a new browser instance — the extension won't work there!**
+
+**Before spawning the subagent:**
+1. Open **Google Chrome** (the existing instance you use daily)
+2. Navigate to Realtor.com in a tab
+3. Click the **OpenClaw extension icon** (badge should show "ON")
+4. **Keep this Chrome window open** — the subagent will connect to it
+
+**When the subagent runs:**
+- It MUST use `profile="chrome"` — this connects to your existing Chrome
+- It MUST create a **new tab** in the existing browser, not open a new browser instance
+- Kasada bot protection blocks all headless browsers (Playwright, Puppeteer, Selenium)
+
+**If the subagent tries to open a new Chromium instance, STOP IT.** The relay extension only works in the existing Chrome instance where it's been manually attached.
+
+### 2. GitHub Access
+- Repo: `slammyslinker-sketch/slammyslinker-sketch.github.io`
+- Ensure push access is configured
 
 ## Update Procedure
 
@@ -41,16 +52,19 @@ sessions_spawn({
 
 ### Step 3: Extract New Listings via Browser Relay
 
-**Critical:** Use `profile="chrome"` — do NOT use Playwright/Puppeteer
+**⚠️ CRITICAL: Use the EXISTING Chrome instance — do NOT open a new browser**
 
+**Correct approach:**
 ```javascript
-// Navigate to search page
+// Open a NEW TAB in the existing Chrome instance
+// profile="chrome" connects to the relay-attached browser
 browser({
   action: "open",
-  profile: "chrome",
+  profile: "chrome",  // ← CRITICAL: Uses existing Chrome, not new browser
   targetUrl: "https://www.realtor.com/realestateandhomes-search/29710"
 })
 
+// The subagent now has control of a new tab in your existing Chrome
 // Wait for listings to load
 browser({
   action: "act",
@@ -78,6 +92,15 @@ browser({
       return listings;
     `
   }
+})
+```
+
+**WRONG approach (DO NOT DO THIS):**
+```javascript
+// ❌ This opens a NEW browser instance - extension won't work!
+browser({
+  action: "open",
+  targetUrl: "..."  // No profile specified = new Chromium instance
 })
 ```
 
@@ -181,13 +204,14 @@ git push origin main
 
 **Must be performed by subagent to confirm deployment:**
 
+**Option A: HTTP Fetch (Recommended for verification)**
 ```javascript
 // Wait 30 seconds for GitHub Pages to start deploying
 await new Promise(r => setTimeout(r, 30000));
 
 // Fetch the live listings.json and verify timestamp
 const fetch = require('node-fetch');
-const response = await fetch('https://slammyslinker-sketch.github.io/listings.json');
+const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
 const data = await response.json();
 
 // Compare timestamps
@@ -201,6 +225,20 @@ if (data.lastUpdated === expectedTimestamp) {
 }
 ```
 
+**Option B: Visual Verification via Browser (Use existing Chrome!)**
+If you need to visually verify the site:
+```javascript
+// Open site in a NEW TAB in the existing Chrome instance
+browser({
+  action: "open",
+  profile: "chrome",  // ← CRITICAL: Use existing Chrome, not new browser
+  targetUrl: "https://slammyslinker-sketch.github.io/"
+})
+
+// Take screenshot to verify
+browser({ action: "screenshot", fullPage: true })
+```
+
 **If site doesn't update within 2 minutes:**
 1. Try force-pushing an amended commit: `git commit --amend --no-edit && git push --force`
 2. Check GitHub Pages settings for build errors
@@ -208,6 +246,33 @@ if (data.lastUpdated === expectedTimestamp) {
 4. Report failure to main session if unable to resolve
 
 ## Troubleshooting
+
+### Browser Opens New Instance (CRITICAL)
+**Problem:** Subagent tries to open a new Chromium browser instead of using existing Chrome.
+
+**Symptoms:**
+- New browser window opens
+- OpenClaw extension icon not present
+- Kasada blocks the request immediately
+
+**Solution:**
+1. **Kill the new browser instance immediately**
+2. **Ensure subagent uses `profile="chrome"`** in ALL browser calls:
+   ```javascript
+   browser({
+     action: "open",
+     profile: "chrome",  // ← REQUIRED
+     targetUrl: "..."
+   })
+   ```
+3. **Verify the existing Chrome has the relay attached:**
+   - Check extension badge shows "ON"
+   - If not, click the extension icon to attach
+
+**Prevention:**
+- ALWAYS include `profile: "chrome"` in browser calls
+- NEVER omit the profile parameter
+- The subagent should create a **new tab**, not a **new browser**
 
 ### Browser Relay Not Working
 - Ensure Chrome tab is active and Realtor.com is loaded
