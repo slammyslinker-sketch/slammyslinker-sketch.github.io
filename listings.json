@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-02-26T20:55:00.000Z",
-  "lastChecked": "2026-02-26T20:55:00.000Z",
+  "lastUpdated": "2026-02-26T21:20:00.000Z",
+  "lastChecked": "2026-02-26T21:20:00.000Z",
   "searchCriteria": {
     "zips": [
       "29710",
@@ -18,6 +18,74 @@
   },
   "listings": [
     {
+      "id": "29710-007",
+      "address": "4913 Summerside Dr",
+      "city": "Lake Wylie",
+      "state": "SC",
+      "zip": "29710",
+      "price": "$387,000",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2100,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/4913-Summerside-Dr_Lake-Wylie_SC_29710_M53244-66098",
+      "image": "https://ap.rdcpix.com/34c63e9da89d294692fa5405ebde1405l-m3831076954rd-w1280_h960.webp",
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW! Open house Sat 2/28 10am-1pm. 3bed/2bath, 2,100 sqft. Built 2006, 2-car garage, fireplace."
+    },
+    {
+      "id": "29745-003",
+      "address": "1011 Two Brothers Ln",
+      "city": "York",
+      "state": "SC",
+      "zip": "29745",
+      "price": "$349,000",
+      "beds": 4,
+      "baths": 2.5,
+      "sqft": 2174,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/1011-Two-Brothers-Ln_York_SC_29745_M97260-74303",
+      "image": "https://nh.rdcpix.com/9a64e7906a042c66354ebec7d08a5fb3l-f2845992151rd-w960_h720.webp",
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW construction by D.R. Horton! 4bed/2.5bath, sqft perfect (2,174). 3D tour available."
+    },
+    {
+      "id": "29720-005",
+      "address": "21216 Sanctuary Dr (TA2100 Plan)",
+      "city": "Lancaster",
+      "state": "SC",
+      "zip": "29720",
+      "price": "From $339,900",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2100,
+      "status": "For Sale",
+      "url": "https://www.realtor.com/realestateandhomes-detail/TA2100_Edgewater-The-Groves_21216-Sanctuary-Dr_Lancaster_SC_29720_P417000966966",
+      "image": "https://nh.rdcpix.com/2c1b31a9fe6c61302175c60c85391922e-f692618825rd-w960_h720.webp",
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW construction by True Homes! Edgewater - The Groves. 3bed/2bath, 2,100 sqft."
+    },
+    {
+      "id": "29730-003",
+      "address": "286 Liverpool Rd",
+      "city": "Rock Hill",
+      "state": "SC",
+      "zip": "29730",
+      "price": "$355,000",
+      "beds": 4,
+      "baths": 3,
+      "sqft": 1890,
+      "status": "Condo",
+      "url": "https://www.realtor.com/realestateandhomes-detail/286-Liverpool-Rd_Rock-Hill_SC_29730_M92627-17030",
+      "image": "https://ap.rdcpix.com/7f6bae4698b9fe4a47561752b3b2506dl-b2519733683rd-w1280_h960.webp",
+      "isNew": true,
+      "hoa": null,
+      "notes": "⭐ NEW! Price reduced. 4bed/3bath condo - baths perfect! Sqft slightly under (1,890). Virtual tour available."
+    },
+    {
       "id": "29710-005",
       "address": "760 Bellegray Rd",
       "city": "Clover",
@@ -30,9 +98,9 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/760-Bellegray-Rd_Clover_SC_29710_M54156-81631",
       "image": null,
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
-      "notes": "⭐ NEW! 4bed/3bath on 1.6 acre lot. Price in range, baths perfect! Tour available."
+      "notes": "4bed/3bath on 1.6 acre lot. Price in range, baths perfect! Tour available."
     },
     {
       "id": "29710-006",
@@ -47,9 +115,9 @@
       "status": "Townhouse",
       "url": "https://www.realtor.com/realestateandhomes-detail/625-Cassidy-Ct_Clover_SC_29710_M99754-21130",
       "image": null,
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
-      "notes": "⭐ NEW! New construction townhouse by Mattamy Homes. 3bed/2.5bath, 1,771 sqft. 3D tour available."
+      "notes": "New construction townhouse by Mattamy Homes. 3bed/2.5bath, 1,771 sqft. 3D tour available."
     },
     {
       "id": "29720-002",
@@ -64,7 +132,7 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/3236-Daystar-Rd_Lancaster_SC_29720_M66139-07848",
       "image": "images/3236-daystar-rd.jpg",
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
       "notes": "4bed/3bath on 3 acres! Great price, sqft perfect (2128)."
     },
@@ -81,9 +149,9 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/135-Old-Gregory-Ln_Lancaster_SC_29720_M62348-68060",
       "image": "images/135-old-gregory-ln.jpg",
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
-      "notes": "⭐ NEW LISTING! 4bed/2.5bath on 1.4 acres. Sqft perfect (2006)."
+      "notes": "4bed/2.5bath on 1.4 acres. Sqft perfect (2006)."
     },
     {
       "id": "29720-004",
@@ -115,7 +183,7 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/637-University-Dr_Rock-Hill_SC_29730_M54750-05526",
       "image": "images/637-university-dr.jpg",
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
       "notes": "3bed/2bath, sqft in range (2168), 0.34 acre lot."
     },
@@ -132,7 +200,7 @@
       "status": "For Sale",
       "url": "https://www.realtor.com/realestateandhomes-detail/412-Vidette-Dr_York_SC_29745_M94935-98032",
       "image": "images/412-vidette-dr.jpg",
-      "isNew": true,
+      "isNew": false,
       "hoa": null,
       "notes": "Price reduced $11k! 4bed/2.5bath, sqft slightly under (1889)."
     },
