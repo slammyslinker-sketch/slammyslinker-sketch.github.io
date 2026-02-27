@@ -131,10 +131,39 @@ browser({
 })
 ```
 
+**⚠️ CRITICAL: Listings Without Photos**
+
+Some listings (especially new construction) may not have photos in the CDN. **You MUST capture a screenshot of the property front in these cases.**
+
+```javascript
+// If no hero image URL found, take a screenshot
+const imageUrl = await browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const heroImg = document.querySelector('img[alt*="featured"], img[alt*="yard"], .hero-image img');
+      return heroImg ? heroImg.src : null;
+    `
+  }
+});
+
+if (!imageUrl) {
+  // No photo available - capture screenshot of property page
+  // This shows the property front or placeholder
+  const screenshot = await browser({
+    action: "screenshot",
+    fullPage: false  // Just the visible viewport showing property
+  });
+  // Save screenshot as property image
+}
+```
+
 **Image URL Tips:**
 - Realtor.com images are hosted on `ap.rdcpix.com`
 - URLs often end in `.webp` but you can download as `.jpg`
 - Use the largest available size (URLs often have `w1280_h960` or similar)
+- **If no CDN image exists, screenshot is required** — listings without images look broken on the site
 
 ### Step 5: Extract HOA Information (CRITICAL)
 
@@ -478,9 +507,51 @@ browser({
 - Check extension badge shows "ON"
 - Try clicking the extension icon again to re-attach
 
-### Kasada Block Page
-- If you see "Your request could not be processed" with a reference ID, the browser relay isn't being used
-- Double-check you're using `profile="chrome"` not default Playwright
+### Kasada Block Page / Rate Limit Hit
+**Problem:** Realtor.com returns "Your request could not be processed" or rate limits extraction.
+
+**If rate limited on Realtor.com — FALLBACK TO REDFIN:**
+
+Spawn a subagent with high thinking to gather data from Redfin.com:
+
+```javascript
+sessions_spawn({
+  label: "redfin-fallback-extraction",
+  mode: "run",
+  runTimeoutSeconds: 600,
+  task: `Extract house listings from Redfin.com for zip codes 29710, 29745, 29720, 29730.
+  
+Criteria:
+- Price: $300k-$400k
+- Beds: 3-4
+- Baths: 2+
+- Sqft: 1800-2200
+
+Use the OpenClaw browser relay (profile="chrome") to navigate Redfin.com.
+Search each zip code and extract:
+- Address
+- Price
+- Beds/Baths/Sqft
+- HOA fees (if any)
+- Property image URL
+- Listing URL
+
+Return data in same format as Realtor.com extraction.`,
+  thinking: "high"
+})
+```
+
+**Redfin extraction notes:**
+- Navigate to: `https://www.redfin.com/zipcode/[ZIPCODE]`
+- Use browser relay with `profile="chrome"` — existing Chrome instance only
+- Look for `.HomeCard` or `[data-rf-test-name="home-card"]` selectors
+- Extract from property detail pages for HOA and full images
+- Redfin data structure may differ — map to our listings.json format
+
+**Prevention on Realtor.com:**
+- Add delays between requests (2-3 seconds)
+- Use browser relay properly — don't trigger bot detection
+- If you see Kasada block, immediately switch to Redfin fallback
 
 ### Image Download Issues
 - Some images may require the `Referer` header set to `https://www.realtor.com/`
