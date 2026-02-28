@@ -16,7 +16,8 @@
       "hoa": "$255/mo",
       "description": "1.6-acre homesite in Irongate Farm community with mature trees. HOA: Irongate Farm. Located in Clover School District with easy access to Charlotte and Lake Wylie. Currently under construction.",
       "image": "images/760-bellegray.jpg",
-      "url": "https://www.redfin.com/SC/Clover/760-Bellegray-Rd-29710/home/102088006"
+      "url": "https://www.redfin.com/SC/Clover/760-Bellegray-Rd-29710/home/102088006",
+      "status": "Active"
     },
     {
       "id": "2",
@@ -33,7 +34,8 @@
       "hoa": null,
       "description": "Lake Wylie home with community pool, boat storage, and public lake access within 2 miles. Built-in speakers and ethernet ports in every room.",
       "image": "images/4913-summerside.jpg",
-      "url": "https://www.redfin.com/SC/Clover/4913-Summerside-Dr-29710/home/52069394"
+      "url": "https://www.redfin.com/SC/Clover/4913-Summerside-Dr-29710/home/52069394",
+      "status": "Active"
     },
     {
       "id": "3",
@@ -50,7 +52,8 @@
       "hoa": null,
       "description": "Beautiful 3-bedroom home in Lake Wylie area with 2.5 bathrooms",
       "image": "images/746-ladino.jpg",
-      "url": "https://www.redfin.com/SC/Clover/746-Ladino-Ln-29710/home/52067385"
+      "url": "https://www.redfin.com/SC/Clover/746-Ladino-Ln-29710/home/52067385",
+      "status": "Active"
     },
     {
       "id": "4",
@@ -67,7 +70,8 @@
       "hoa": "$272/mo",
       "description": "End unit townhome in Ivy Ridge community with resort-style amenities including pool, pickleball courts, playground, and clubhouse. Open floor plan with granite countertops and stainless steel appliances.",
       "image": "images/629-cypress-glen.jpg",
-      "url": "https://www.redfin.com/SC/Clover/629-Cypress-Glen-Ln-29710/home/173632822"
+      "url": "https://www.redfin.com/SC/Clover/629-Cypress-Glen-Ln-29710/home/173632822",
+      "status": "Active"
     },
     {
       "id": "5",
@@ -84,7 +88,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in Lake Wylie area",
       "image": "images/642-altamonte.jpg",
-      "url": "https://www.redfin.com/SC/Clover/642-Altamonte-Dr-29710/home/169997997"
+      "url": "https://www.redfin.com/SC/Clover/642-Altamonte-Dr-29710/home/169997997",
+      "status": "Active"
     },
     {
       "id": "6",
@@ -101,7 +106,8 @@
       "hoa": null,
       "description": "Charming ranch home in Church Hill Estates with 40' RV carport, woodshop, fenced backyard, and in-ground pool. Separate living quarters with attached garage.",
       "image": "images/426-union-baptist.jpg",
-      "url": "https://www.redfin.com/SC/York/426-Union-Baptist-Church-Rd-29745/home/52092401"
+      "url": "https://www.redfin.com/SC/York/426-Union-Baptist-Church-Rd-29745/home/52092401",
+      "status": "Active"
     },
     {
       "id": "7",
@@ -118,7 +124,8 @@
       "hoa": null,
       "description": "Spacious 5-bedroom home in Brookside Community near downtown York. Mature landscaping with abundant natural light.",
       "image": "images/404-brookhollow.jpg",
-      "url": "https://www.redfin.com/SC/York/404-Brookhollow-Dr-29745/home/52135754"
+      "url": "https://www.redfin.com/SC/York/404-Brookhollow-Dr-29745/home/52135754",
+      "status": "Active"
     },
     {
       "id": "8",
@@ -135,7 +142,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in York",
       "image": "images/145-ole-eastpointe.jpg",
-      "url": "https://www.redfin.com/SC/York/145-Ole-Eastpointe-Dr-29745/home/164829705"
+      "url": "https://www.redfin.com/SC/York/145-Ole-Eastpointe-Dr-29745/home/164829705",
+      "status": "Active"
     },
     {
       "id": "9",
@@ -152,7 +160,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in York with 2,166 sqft",
       "image": "images/1264-whitehall-hill.jpg",
-      "url": "https://www.redfin.com/SC/York/1264-Whitehall-Hill-Rd-29745/home/167930349"
+      "url": "https://www.redfin.com/SC/York/1264-Whitehall-Hill-Rd-29745/home/167930349",
+      "status": "Active"
     },
     {
       "id": "10",
@@ -169,7 +178,8 @@
       "hoa": null,
       "description": "4-bedroom, 2.5-bathroom home in York with 1,953 sqft",
       "image": "images/937-canopy-falls.jpg",
-      "url": "https://www.redfin.com/SC/York/937-Canopy-Falls-Ln-29745/home/183546058"
+      "url": "https://www.redfin.com/SC/York/937-Canopy-Falls-Ln-29745/home/183546058",
+      "status": "Active"
     },
     {
       "id": "11",
@@ -186,7 +196,8 @@
       "hoa": null,
       "description": "5-bedroom, 3-bathroom home in York with 2,368 sqft",
       "image": "images/995-two-brothers.jpg",
-      "url": "https://www.redfin.com/SC/York/995-Two-Brothers-Ln-29745/home/194041886"
+      "url": "https://www.redfin.com/SC/York/995-Two-Brothers-Ln-29745/home/194041886",
+      "status": "Active"
     },
     {
       "id": "12",
@@ -203,7 +214,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in York with 1,749 sqft",
       "image": "images/999-two-brothers.jpg",
-      "url": "https://www.redfin.com/SC/York/999-Two-Brothers-Ln-29745/home/194041887"
+      "url": "https://www.redfin.com/SC/York/999-Two-Brothers-Ln-29745/home/194041887",
+      "status": "Active"
     },
     {
       "id": "13",
@@ -220,7 +232,8 @@
       "hoa": null,
       "description": "Brand new ranch home on 1.24 private wooded acres in Buford School District. No HOA! Vaulted ceilings, quartz counters, open-concept layout.",
       "image": "images/2338-neill.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/2338-State-Road-S-29-285-29720/home/200698402"
+      "url": "https://www.redfin.com/SC/Lancaster/2338-State-Road-S-29-285-29720/home/200698402",
+      "status": "Active"
     },
     {
       "id": "14",
@@ -237,7 +250,8 @@
       "hoa": null,
       "description": "Modern farmhouse-style home built in 2024 with covered front porch, wood-accent tray ceiling, electric fireplace, and open-concept living.",
       "image": "images/2015-country-club.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/2015-Country-Club-Dr-29720/home/52147843"
+      "url": "https://www.redfin.com/SC/Lancaster/2015-Country-Club-Dr-29720/home/52147843",
+      "status": "Active"
     },
     {
       "id": "15",
@@ -254,7 +268,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Lancaster with 1,873 sqft",
       "image": "images/1223-pinedale.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/1223-Pinedale-Rd-29720/home/52156727"
+      "url": "https://www.redfin.com/SC/Lancaster/1223-Pinedale-Rd-29720/home/52156727",
+      "status": "Active"
     },
     {
       "id": "16",
@@ -271,7 +286,8 @@
       "hoa": null,
       "description": "4-bedroom, 2-bathroom home in Lancaster with 1,714 sqft",
       "image": "images/704-marion-sims.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/704-Marion-Sims-Dr-29720/home/52151923"
+      "url": "https://www.redfin.com/SC/Lancaster/704-Marion-Sims-Dr-29720/home/52151923",
+      "status": "Active"
     },
     {
       "id": "17",
@@ -288,7 +304,8 @@
       "hoa": null,
       "description": "4-bedroom, 2.5-bathroom home in Lancaster with 1,704 sqft",
       "image": "images/459-barr.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/459-W-Barr-St-29720/home/52167131"
+      "url": "https://www.redfin.com/SC/Lancaster/459-W-Barr-St-29720/home/52167131",
+      "status": "Active"
     },
     {
       "id": "18",
@@ -305,7 +322,8 @@
       "hoa": null,
       "description": "4-bedroom, 2.5-bathroom home in Lancaster with 2,006 sqft",
       "image": "images/135-old-gregory.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/135-Old-Gregory-Ln-29720/home/52145496"
+      "url": "https://www.redfin.com/SC/Lancaster/135-Old-Gregory-Ln-29720/home/52145496",
+      "status": "Active"
     },
     {
       "id": "19",
@@ -322,7 +340,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in Lancaster with 1,846 sqft",
       "image": "images/1626-camp-creek.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/1626-Camp-Creek-Rd-29720/home/52172786"
+      "url": "https://www.redfin.com/SC/Lancaster/1626-Camp-Creek-Rd-29720/home/52172786",
+      "status": "Active"
     },
     {
       "id": "20",
@@ -339,7 +358,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Lancaster with 1,964 sqft",
       "image": "images/1790-windsor.jpg",
-      "url": "https://www.redfin.com/SC/Lancaster/1790-Windsor-Dr-29720/home/52160966"
+      "url": "https://www.redfin.com/SC/Lancaster/1790-Windsor-Dr-29720/home/52160966",
+      "status": "Active"
     },
     {
       "id": "21",
@@ -356,7 +376,8 @@
       "hoa": null,
       "description": "Charming 3-bedroom home in desirable neighborhood near golf, downtown, schools, and interstate. Open living area with well-appointed kitchen.",
       "image": "images/201-sherwood.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/201-Sherwood-Cir-29730/home/52112524"
+      "url": "https://www.redfin.com/SC/Rock-Hill/201-Sherwood-Cir-29730/home/52112524",
+      "status": "Active"
     },
     {
       "id": "22",
@@ -373,7 +394,8 @@
       "hoa": null,
       "description": "Stunning 1.5-story home with luxurious main-floor owner's suite, 9' ceilings, 42\" cabinetry, and gourmet kitchen island. Built in 2022.",
       "image": "images/1196-cavalier.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/1196-Cavalier-Ln-29730/home/180097039"
+      "url": "https://www.redfin.com/SC/Rock-Hill/1196-Cavalier-Ln-29730/home/180097039",
+      "status": "Active"
     },
     {
       "id": "23",
@@ -390,7 +412,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Rock Hill with 1,746 sqft",
       "image": "images/1020-candlewood.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/1020-Candlewood-Ln-29730/home/52116365"
+      "url": "https://www.redfin.com/SC/Rock-Hill/1020-Candlewood-Ln-29730/home/52116365",
+      "status": "Active"
     },
     {
       "id": "24",
@@ -407,7 +430,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in Rock Hill with 1,721 sqft",
       "image": "images/1336-shaw.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/1336-Shaw-Ave-29730/home/85815948"
+      "url": "https://www.redfin.com/SC/Rock-Hill/1336-Shaw-Ave-29730/home/85815948",
+      "status": "Active"
     },
     {
       "id": "25",
@@ -424,7 +448,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom home in Rock Hill with 2,140 sqft",
       "image": "images/903-von-buren.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/903-Von-Buren-Blvd-29730/home/169998685"
+      "url": "https://www.redfin.com/SC/Rock-Hill/903-Von-Buren-Blvd-29730/home/169998685",
+      "status": "Active"
     },
     {
       "id": "26",
@@ -441,7 +466,8 @@
       "hoa": null,
       "description": "4-bedroom, 2.5-bathroom home in Rock Hill with 2,081 sqft",
       "image": "images/127-emily-crest.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/127-Emily-Crest-Ln-29730/home/52075680"
+      "url": "https://www.redfin.com/SC/Rock-Hill/127-Emily-Crest-Ln-29730/home/52075680",
+      "status": "Active"
     },
     {
       "id": "27",
@@ -458,7 +484,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Rock Hill with 1,554 sqft",
       "image": "images/508-bridgestone.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/508-Bridge-Stone-Ln-29730/home/52127062"
+      "url": "https://www.redfin.com/SC/Rock-Hill/508-Bridge-Stone-Ln-29730/home/52127062",
+      "status": "Active"
     },
     {
       "id": "28",
@@ -475,7 +502,8 @@
       "hoa": null,
       "description": "3-bedroom, 3-bathroom home in Rock Hill with 1,864 sqft",
       "image": "images/3790-rogers.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/3790-Rogers-Cir-29730/home/52130999"
+      "url": "https://www.redfin.com/SC/Rock-Hill/3790-Rogers-Cir-29730/home/52130999",
+      "status": "Active"
     },
     {
       "id": "29",
@@ -492,7 +520,8 @@
       "hoa": null,
       "description": "3-bedroom, 2.5-bathroom townhome in Rock Hill with 1,638 sqft",
       "image": "images/536-braintree.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/536-Braintree-Ter-29730/unit-80/home/171203144"
+      "url": "https://www.redfin.com/SC/Rock-Hill/536-Braintree-Ter-29730/unit-80/home/171203144",
+      "status": "Active"
     },
     {
       "id": "30",
@@ -509,7 +538,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Rock Hill with 1,456 sqft",
       "image": "images/427-mint.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/427-Mint-St-29730/home/164859572"
+      "url": "https://www.redfin.com/SC/Rock-Hill/427-Mint-St-29730/home/164859572",
+      "status": "Active"
     },
     {
       "id": "31",
@@ -526,7 +556,8 @@
       "hoa": null,
       "description": "3-bedroom, 2-bathroom home in Rock Hill with 1,407 sqft",
       "image": "images/1048-croatoan.jpg",
-      "url": "https://www.redfin.com/SC/Rock-Hill/1048-Croatoan-Dr-29730/home/52112274"
+      "url": "https://www.redfin.com/SC/Rock-Hill/1048-Croatoan-Dr-29730/home/52112274",
+      "status": "Active"
     }
   ]
 }
