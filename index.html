@@ -541,7 +541,7 @@
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-icon">📐</span>
-                                    <span>${listing.sqft.toLocaleString()} sqft</span>
+                                    <span>${listing.sqft ? listing.sqft.toLocaleString() : 'N/A'} sqft</span>
                                 </div>
                             </div>
                             <a href="${listing.url}" target="_blank" class="listing-link">View Details →</a>
