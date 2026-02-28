@@ -1,6 +1,6 @@
 # Willy's Adventure Zone - Update Procedure
 
-**Last Updated:** 2026-02-26
+**Last Updated:** 2026-02-28
 
 ## Overview
 
@@ -39,7 +39,7 @@ This document outlines the complete procedure for updating the Willy's Adventure
 sessions_spawn({
   label: "willys-adventure-zone-update",
   mode: "run",
-  runTimeoutSeconds: 600,
+  runTimeoutSeconds: 900,
   task: "Update Willy's Adventure Zone house hunt site..."
 })
 ```
@@ -234,32 +234,41 @@ Structure for each listing:
 ```json
 {
   "id": "realtor-com-unique-id",
-  "address": "123 Main St, City, ST 12345",
-  "price": "$350,000",
+  "address": "123 Main St",
+  "city": "City",
+  "state": "ST",
+  "zip": "12345",
+  "price": 350000,
   "beds": 3,
   "baths": 2,
   "sqft": 2100,
-  "image": "https://ap.rdcpix.com/.../image.jpg",
-  "url": "https://www.realtor.com/realestateandhomes-detail/...",
-  "isNew": true,
+  "lotSize": "0.5 acres",
+  "yearBuilt": 2010,
   "hoa": "$150/mo",
-  "notes": "Brief description or status"
+  "status": "Active",
+  "description": "Brief description",
+  "image": "images/property-id.jpg",
+  "url": "https://www.realtor.com/realestateandhomes-detail/...",
+  "isNew": true
 }
 ```
 
-**⚠️ CRITICAL - HOA Field:**
-- **ALWAYS** check for HOA fees during extraction (Step 5)
-- If HOA exists: Record the fee (e.g., `"hoa": "$150/mo"` or `"hoa": "$1,800/year"`)
-- If NO HOA: Set `"hoa": null` (not undefined, not empty string)
-- The site displays HOA fees prominently in red on listing cards
-- The site counts and displays how many homes have HOAs
+**⚠️ CRITICAL - Required Fields:**
+- **status** (REQUIRED): Must be present on every listing. Use "Active", "Pending", "Contingent", etc.
+- **hoa** (REQUIRED): Must be present. Use `"$150/mo"`, `"$1,800/year"`, or `null` if no HOA.
+- **sqft** (REQUIRED): Must be a number or `null`. Do not omit this field.
+- **price** (REQUIRED): Must be a number (not a string like "$350,000")
+- **address** (REQUIRED): Street address only (no city/state/zip)
+- **city, state, zip** (REQUIRED): Separate fields
+
+**⚠️ DO NOT SKIP THESE FIELDS** — Missing fields will cause JavaScript errors on the site.
 
 **Other Important Fields:**
 - Set `isNew: true` for all newly added listings
 - Set `isNew: false` for older listings that were previously marked new
 - Update the `lastUpdated` timestamp at the top of the file
 
-### Step 6: Download Images
+### Step 7: Download Images
 
 ```bash
 # Download each image to willy-site/images/
@@ -269,36 +278,6 @@ curl -L -o "willy-site/images/property-id.jpg" "https://ap.rdcpix.com/.../image.
 file willy-site/images/property-id.jpg
 # Should output: "JPEG image data, ..."
 ```
-
-### Step 7: Update index.html to Display All Listings
-
-**⚠️ IMPORTANT:** After updating `listings.json`, you MUST verify that `index.html` displays all listings.
-
-The JavaScript in index.html loads listings dynamically from `listings.json`. After adding new listings:
-
-1. **Check that index.html loads from listings.json correctly**
-   - Look for the `loadListings()` function
-   - Ensure it fetches `listings.json` (not hardcoded data)
-   - Verify there's no limit/filter preventing display
-
-2. **If listings don't appear after push:**
-   - Browser cache may be holding old JS
-   - Try cache-busting: add `?v=2` to the page URL
-   - Or hard-refresh: Ctrl+Shift+R (or Cmd+Shift+R on Mac)
-
-3. **If still not showing all listings:**
-   - Check browser console for JavaScript errors
-   - Verify `listings.json` is valid JSON (no syntax errors)
-   - Ensure fetch URL is correct: `listings.json` (relative path)
-
-**If you need to update index.html template:**
-The site uses a card-based layout. Each listing generates a card with:
-- Image (top)
-- Price (prominent)
-- Address
-- Beds / Baths / Sqft
-- "NEW" badge (if isNew is true)
-- Link to Realtor.com detail page
 
 ### Step 8: Commit and Push
 
@@ -322,125 +301,47 @@ git push origin main
 
 ### Step 9: Verify Site Update (CRITICAL)
 
-**Must be performed by subagent to confirm deployment:**
+**Wait for deployment:** GitHub Pages takes 30-120 seconds to deploy.
 
-**Option A: HTTP Fetch (Recommended for verification)**
+**Verification Steps:**
+
+1. **HTTP fetch to verify timestamp updated:**
 ```javascript
-// Wait 30 seconds for GitHub Pages to start deploying
-await new Promise(r => setTimeout(r, 30000));
-
-// Fetch the live listings.json and verify timestamp
 const fetch = require('node-fetch');
 const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
 const data = await response.json();
-
-// Compare timestamps
-const expectedTimestamp = "2026-02-26T21:20:00.000Z"; // Use actual timestamp from your update
-if (data.lastUpdated === expectedTimestamp) {
-  console.log("✅ Site updated successfully!");
-} else {
-  console.log("⚠️ Site not updated yet. GitHub Pages may be delayed.");
-  console.log("Expected:", expectedTimestamp);
-  console.log("Got:", data.lastUpdated);
-}
+console.log(`Listings count: ${data.listings.length}`);
+console.log(`Last updated: ${data.lastUpdated}`);
 ```
 
-**Option B: Visual Verification via Browser (Use existing Chrome!)**
-If you need to visually verify the site:
+2. **Browser verification (use existing Chrome):**
 ```javascript
-// Open site in a NEW TAB in the existing Chrome instance
-browser({
-  action: "open",
-  profile: "chrome",  // ← CRITICAL: Use existing Chrome, not new browser
-  targetUrl: "https://slammyslinker-sketch.github.io/"
-})
-
-// Take screenshot to verify
-browser({ action: "screenshot", fullPage: true })
-```
-
-**If site doesn't update within 2 minutes:**
-1. Try force-pushing an amended commit: `git commit --amend --no-edit && git push --force`
-2. Check GitHub Pages settings for build errors
-3. Manually verify at https://slammyslinker-sketch.github.io/listings.json
-4. **If still not working — SPAWN DIAGNOSTIC SUBAGENT:**
-   ```javascript
-   sessions_spawn({
-     label: "diagnose-github-pages-issue",
-     mode: "run",
-     runTimeoutSeconds: 600,
-     task: "Diagnose why GitHub Pages site is not reflecting updates...",
-     thinking: "high"  // ← High thinking for complex diagnosis
-   })
-   ```
-5. Report failure to main session if unable to resolve
-
-### Step 10: Verify All Listings Display and HOA Data (CRITICAL)
-
-**Just because listings.json updated doesn't mean they appear on the site!**
-
-**Verify count matches:**
-```javascript
-// Check that all listings appear on the live site
-const fetch = require('node-fetch');
-const response = await fetch('https://slammyslinker-sketch.github.io/listings.json?v=' + Date.now());
-const data = await response.json();
-
-console.log(`Total listings in JSON: ${data.listings.length}`);
-// Should be 17 (or whatever your count is)
-```
-
-**Verify HOA data is correct:**
-```javascript
-// Check HOA counts
-const listingsWithHOA = data.listings.filter(l => l.hoa !== null);
-console.log(`Listings with HOA: ${listingsWithHOA.length}`);
-listingsWithHOA.forEach(l => {
-  console.log(`- ${l.address}: ${l.hoa}`);
-});
-
-// Verify HOA displays correctly on site
+// Open site with cache-busting
 browser({
   action: "open",
   profile: "chrome",
-  targetUrl: "https://slammyslinker-sketch.github.io/"
+  targetUrl: "https://slammyslinker-sketch.github.io/?v=" + Date.now()
 })
 
-// Check HOA count banner
-browser({
-  action: "act",
-  request: {
-    kind: "evaluate",
-    fn: `
-      const hoaBanner = document.getElementById('hoaCount');
-      hoaBanner ? hoaBanner.textContent : 'HOA banner not found'
-    `
-  }
-})
-
-// Check that listing cards show HOA fees
-browser({
-  action: "act",
-  request: {
-    kind: "evaluate",
-    fn: `
-      const hoaCards = document.querySelectorAll('.listing-hoa');
-      return Array.from(hoaCards).map(card => card.textContent);
-    `
-  }
-})
+// Wait for page to load, then check console for errors
+browser({ action: "console" })
 ```
 
-**Visual verification:**
-```javascript
-// Open site and count visible listing cards
-browser({
-  action: "open",
-  profile: "chrome",
-  targetUrl: "https://slammyslinker-sketch.github.io/"
-})
+**If errors appear in console, diagnose immediately.** Common errors:
+- `Cannot read properties of undefined (reading 'toLowerCase')` → Missing `status` field
+- `Cannot read properties of null (reading 'toLocaleString')` → Missing or null `sqft` field
 
-// Get count of listing cards
+### Step 10: Post-Update Verification Checklist (CRITICAL)
+
+**⚠️ DO NOT SKIP THIS STEP** — The site may break silently if data is malformed.
+
+**Verify via browser:**
+```javascript
+// 1. Check no JavaScript errors
+browser({ action: "console" })
+// Should return: { ok: true, messages: [] }
+
+// 2. Check listings count matches
 browser({
   action: "act",
   request: {
@@ -448,30 +349,127 @@ browser({
     fn: `document.querySelectorAll('.listing-card').length`
   }
 })
+// Should equal data.listings.length from Step 9
 
-// Should match data.listings.length
+// 3. Check HOA count displays correctly
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `document.getElementById('hoaCount').textContent`
+  }
+})
+// Should show: "X homes currently displayed have an HOA"
+
+// 4. Check sample listing card renders correctly
+browser({
+  action: "act",
+  request: {
+    kind: "evaluate",
+    fn: `
+      const firstCard = document.querySelector('.listing-card');
+      return {
+        hasImage: firstCard.querySelector('img') !== null,
+        hasPrice: firstCard.querySelector('.listing-price') !== null,
+        hasAddress: firstCard.querySelector('.listing-address') !== null,
+        hasStatus: firstCard.querySelector('.status-badge') !== null
+      };
+    `
+  }
+})
+// All should be true
 ```
 
-**If count doesn't match:**
-1. Check browser console for JS errors
-2. Verify index.html loads listings.json correctly
-3. Try cache-busting with `?v=2` query param
-4. If needed, spawn subagent to fix index.html:
-   ```javascript
-   sessions_spawn({
-     label: "fix-index-html-display",
-     mode: "run",
-     runTimeoutSeconds: 600,
-     task: "Fix index.html to display all listings from listings.json..."
-   })
-   ```
+**If any check fails:**
+1. Check `listings.json` for missing required fields
+2. Verify `index.html` JavaScript handles null values properly
+3. Fix data or code issues
+4. Commit and push again
+5. Re-verify
 
-**If HOA data is missing or incorrect:**
-1. Re-check the property detail page on Realtor.com for HOA info
-2. Update listings.json with correct `hoa` field
-3. Verify the site displays HOA fees (red text on listing cards)
-4. Verify the HOA count banner shows correct number
-5. If extraction missed HOA data, improve the extraction regex/pattern
+---
+
+## Known Issues & Solutions
+
+### Issue: Site Shows "Error loading listings"
+
+**Causes:**
+1. Missing `status` field in listings.json
+2. Missing or null `sqft` field without proper handling
+3. Malformed JSON
+
+**Solutions:**
+
+**Fix 1: Ensure all listings have required fields**
+```bash
+cd willy-site
+python3 -c "
+import json
+with open('listings.json') as f:
+    data = json.load(f)
+
+for listing in data['listings']:
+    # Ensure status exists
+    if not listing.get('status'):
+        listing['status'] = 'Active'
+    # Ensure sqft exists (can be null, but field must exist)
+    if 'sqft' not in listing:
+        listing['sqft'] = None
+    # Ensure hoa exists
+    if 'hoa' not in listing:
+        listing['hoa'] = None
+
+with open('listings.json', 'w') as f:
+    json.dump(data, f, indent=2)
+"
+```
+
+**Fix 2: Update index.html to handle null values**
+
+In the JavaScript template string that generates listing cards, replace:
+```javascript
+// OLD (crashes on null):
+<span>${listing.sqft.toLocaleString()} sqft</span>
+
+// NEW (handles null):
+<span>${listing.sqft ? listing.sqft.toLocaleString() : 'N/A'} sqft</span>
+```
+
+Also ensure status is handled:
+```javascript
+// This assumes status exists:
+<span class="status-badge ${listing.status.toLowerCase()}">${listing.status}</span>
+```
+
+### Issue: GitHub Pages Not Updating
+
+**Symptoms:** Site shows old data after push
+
+**Solutions:**
+1. Wait 2-5 minutes for CDN cache
+2. Add cache-busting query param: `?v=2` or `?v=` + Date.now()
+3. Force rebuild: `git commit --amend --no-edit && git push --force`
+4. Check GitHub repo → Settings → Pages for build errors
+
+### Issue: Missing Images
+
+**Symptoms:** Listings show 🏠 emoji instead of photos
+
+**Causes:**
+1. Image URLs in listings.json don't match downloaded files
+2. Images not committed to git
+3. Wrong file extension (webp saved as jpg)
+
+**Verification:**
+```bash
+# Check images exist
+ls -la willy-site/images/
+
+# Check file types
+file willy-site/images/*.jpg
+```
+
+---
 
 ## Troubleshooting
 
@@ -611,6 +609,8 @@ Return data in same format as Realtor.com extraction.`,
 - Make trivial change to index.html and push again
 - Contact GitHub Support if persistent
 
+---
+
 ## Files Reference
 
 | File | Purpose |
@@ -622,12 +622,39 @@ Return data in same format as Realtor.com extraction.`,
 
 ## Current Listings Count
 
-- **Total:** 17 listings
-- **Last Update:** 2026-02-26
-- **Coverage Area:** Fort Mill SC 29710 and surrounding areas
+- **Total:** 31 listings
+- **Last Update:** 2026-02-28
+- **Coverage Area:** ZIP codes 29710, 29745, 29720, 29730
 
 ## Automation Notes
 
 - Cron jobs exist for periodic checks (currently running every 11 hours)
 - Manual updates via subagent provide better control and verification
 - Always verify the browser relay is active before starting extraction
+- **Always run post-update verification** to catch data issues before user sees them
+
+---
+
+## Incident Log
+
+### 2026-02-28: "Error loading listings" After Update
+
+**Problem:** Site showed "Error loading listings" after subagent update.
+
+**Root Causes:**
+1. **Missing `status` field:** Subagent didn't include `status` field in listings.json, causing `listing.status.toLowerCase()` to crash
+2. **Null `sqft` value:** One listing (760 Bellegray Rd) had `sqft: null`, causing `listing.sqft.toLocaleString()` to crash
+
+**Fixes Applied:**
+1. Added `"status": "Active"` to all 31 listings
+2. Updated JavaScript to handle null sqft: `${listing.sqft ? listing.sqft.toLocaleString() : 'N/A'} sqft`
+
+**Prevention:**
+- Added Step 10 (Post-Update Verification Checklist) to this procedure
+- Documented required fields in Step 6
+- Updated UPDATE_PROCEDURE.md with known issues section
+
+**Verification:**
+- All 31 listings now display correctly
+- 2 homes with HOA fees properly highlighted
+- No JavaScript errors in console
